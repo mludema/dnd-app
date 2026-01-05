@@ -1,178 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dungeon AI</title>
+    <title>Dungeon App</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        :root { --bg: #121212; --panel: #1e1e1e; --text: #ffffff; --accent: #0a84ff; --dice: #34c759; }
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        /* SAFE MODE STYLES for iPhone 8 */
+        body { 
+            background: #121212; 
+            color: #ffffff; 
+            font-family: -apple-system, sans-serif; 
+            margin: 0; 
+            padding-bottom: 140px; /* Space for fixed bottom bar */
+        }
         
-        /* Chat History */
-        #chat { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 20px; }
-        .msg { max-width: 85%; padding: 12px; border-radius: 18px; font-size: 16px; line-height: 1.4; word-wrap: break-word; }
-        .ai { align-self: flex-start; background: var(--panel); border-bottom-left-radius: 4px; }
-        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
-        .dice { align-self: center; background: var(--dice); font-weight: bold; font-size: 14px; color: white; }
+        /* Standard scrolling - No 100vh locking */
+        #chat { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .msg { padding: 12px; border-radius: 18px; font-size: 16px; line-height: 1.4; max-width: 85%; }
+        .ai { background: #1e1e1e; align-self: flex-start; margin-right: auto; }
+        .user { background: #0a84ff; color: white; align-self: flex-end; margin-left: auto; }
+        .dice { background: #34c759; color: white; font-weight: bold; text-align: center; margin: 10px auto; width: fit-content; }
 
-        /* Bottom Controls */
-        #controls { background: #000; padding: 10px; display: flex; flex-direction: column; gap: 8px; padding-bottom: env(safe-area-inset-bottom, 20px); border-top: 1px solid #333; }
-        .row { display: flex; gap: 8px; }
-        textarea { flex: 1; background: #222; color: #fff; border: 1px solid #444; border-radius: 12px; padding: 10px; font-size: 16px; resize: none; -webkit-appearance: none; }
-        button { border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; padding: 12px; -webkit-tap-highlight-color: transparent; }
-        .btn-blue { background: var(--accent); color: white; }
-        .btn-dark { background: #333; color: white; }
+        /* Fixed Bottom Bar */
+        #controls { 
+            position: fixed; 
+            bottom: 0; left: 0; right: 0; 
+            background: #000; 
+            padding: 10px; 
+            padding-bottom: 25px; /* Safety for home button area */
+            border-top: 1px solid #333;
+            z-index: 50;
+        }
+        .row { display: flex; gap: 10px; margin-bottom: 10px; }
+        
+        textarea { flex: 1; background: #222; color: #fff; border: 1px solid #555; border-radius: 10px; padding: 10px; font-size: 16px; -webkit-appearance: none; }
+        button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; color: white; }
+        .btn-dark { background: #333; }
+        .btn-blue { background: #0a84ff; }
 
-        /* Character Sheet Overlay */
-        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; padding: 20px; box-sizing: border-box; }
-        .sheet-card { background: var(--panel); padding: 20px; border-radius: 20px; position: relative; max-height: 90vh; overflow-y: auto; }
-        .close-btn { position: absolute; top: 10px; right: 15px; background: none; font-size: 24px; color: #777; padding: 5px; }
-        .editable { color: var(--accent); border-bottom: 1px dashed var(--accent); margin-bottom: 15px; display: inline-block; font-size: 18px; min-width: 50px; outline: none; }
-        label { color: #888; font-size: 12px; text-transform: uppercase; display: block; margin-top: 10px; }
-        #inv { width: 100%; height: 120px; background: #111; color: #ccc; border: 1px solid #444; border-radius: 8px; margin-top: 10px; padding: 8px; font-size: 14px; }
+        /* Sheet Overlay */
+        #sheet { 
+            display: none; /* Hidden by default */
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            background: rgba(0,0,0,0.95); 
+            z-index: 100; 
+            padding: 20px; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+        }
+        .sheet-card { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-top: 20px; }
+        .editable { color: #0a84ff; border-bottom: 1px dashed #0a84ff; padding: 5px; font-size: 18px; display: inline-block; min-width: 50px; }
     </style>
 </head>
 <body>
 
 <div id="chat">
-    <div class="msg ai">Welcome, adventurer. Open your 📜 SHEET to enter your API Key and stats to begin.</div>
+    <div class="msg ai">Safe Mode Loaded. Try the buttons below.</div>
 </div>
 
 <div id="controls">
     <div class="row">
-        <button class="btn-dark" id="open-sheet" style="flex: 1;">📜 SHEET</button>
-        <button class="btn-dark" style="flex: 1;" id="dice-btn">🎲 ROLL d20</button>
+        <button class="btn-dark" onclick="openSheet()">📜 SHEET</button>
+        <button class="btn-dark" onclick="rollDice()">🎲 ROLL</button>
     </div>
     <div class="row">
-        <textarea id="input" rows="1" placeholder="What do you do?"></textarea>
-        <button class="btn-blue" id="send">Send</button>
+        <textarea id="input" rows="1" placeholder="Action..."></textarea>
+        <button class="btn-blue" id="sendBtn">SEND</button>
     </div>
 </div>
 
 <div id="sheet">
     <div class="sheet-card">
-        <button class="close-btn" id="close-sheet">✕</button>
-        <h2 style="margin-top:0">Character</h2>
-        
-        <label>Gemini API Key</label>
-        <div id="key" class="editable" contenteditable="true" style="font-size:10px; word-break: break-all;">PASTE_KEY_HERE</div>
-        
-        <div style="display: flex; gap: 20px;">
-            <div style="flex:1">
-                <label>Name</label>
-                <div id="name" class="editable" contenteditable="true">Kaelen</div>
-            </div>
-            <div style="flex:1">
-                <label>D20 Mod</label>
-                <div id="mod" class="editable" contenteditable="true">5</div>
-            </div>
-        </div>
-
-        <label>Inventory & Notes</label>
-        <textarea id="inv" placeholder="Items, gold, HP..."></textarea>
-        <p style="font-size: 10px; color: #555; margin-top: 15px;">Stats save automatically to your iPhone.</p>
+        <button onclick="closeSheet()" style="float:right; font-size:20px; background:none; color:#999;">✕</button>
+        <h2>Character Sheet</h2>
+        <p style="color:#666; font-size:12px;">API KEY:</p>
+        <div id="key" class="editable" contenteditable="true" style="font-size:12px; word-break:break-all;">PASTE_KEY_HERE</div>
+        <br><br>
+        <p style="color:#666; font-size:12px;">NAME:</p>
+        <div id="name" class="editable" contenteditable="true">Kaelen</div>
+        <br><br>
+        <p style="color:#666; font-size:12px;">MODIFIER:</p>
+        <div id="mod" class="editable" contenteditable="true">5</div>
     </div>
 </div>
+
+<script>
+    // These functions are global so they work immediately
+    function openSheet() {
+        document.getElementById('sheet').style.display = 'block';
+    }
+    function closeSheet() {
+        document.getElementById('sheet').style.display = 'none';
+        saveData();
+    }
+    function rollDice() {
+        const mod = parseInt(document.getElementById('mod').innerText) || 0;
+        const roll = Math.floor(Math.random() * 20) + 1;
+        addMessage('dice', `🎲 Rolled: ${roll + mod} (${roll} + ${mod})`);
+    }
+    
+    // Helper to add messages
+    function addMessage(role, text) {
+        const div = document.createElement('div');
+        div.className = 'msg ' + role;
+        div.innerText = text;
+        document.getElementById('chat').appendChild(div);
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // Auto-Save/Load
+    function saveData() {
+        localStorage.setItem('dnd_key', document.getElementById('key').innerText);
+        localStorage.setItem('dnd_name', document.getElementById('name').innerText);
+        localStorage.setItem('dnd_mod', document.getElementById('mod').innerText);
+    }
+    
+    // Load on startup
+    if(localStorage.getItem('dnd_key')) document.getElementById('key').innerText = localStorage.getItem('dnd_key');
+    if(localStorage.getItem('dnd_name')) document.getElementById('name').innerText = localStorage.getItem('dnd_name');
+    if(localStorage.getItem('dnd_mod')) document.getElementById('mod').innerText = localStorage.getItem('dnd_mod');
+</script>
 
 <script type="module">
     import { GoogleGenerativeAI } from "https://cdn.jsdelivr.net/npm/@google/generative-ai@0.14.0/dist/index.js";
 
-    // --- SETUP & ELEMENTS ---
-    const chatContainer = document.getElementById('chat');
-    const userInput = document.getElementById('input');
-    const sendBtn = document.getElementById('send');
-    const sheetModal = document.getElementById('sheet');
-    const openSheetBtn = document.getElementById('open-sheet');
-    const closeSheetBtn = document.getElementById('close-sheet');
-    const diceBtn = document.getElementById('dice-btn');
-
-    // --- AUTO-SAVE LOGIC ---
-    const fields = ['key', 'name', 'mod', 'inv'];
-    fields.forEach(id => {
-        const el = document.getElementById(id);
-        const saved = localStorage.getItem(id);
-        if (saved) el[id === 'inv' ? 'value' : 'innerText'] = saved;
+    document.getElementById('sendBtn').onclick = async () => {
+        const text = document.getElementById('input').value;
+        if(!text) return;
         
-        el.oninput = () => {
-            localStorage.setItem(id, el[id === 'inv' ? 'value' : 'innerText']);
-        };
-    });
-
-    // --- IPHONE 8 TOUCH FIXES ---
-    const toggleSheet = (show) => {
-        sheetModal.style.display = show ? 'flex' : 'none';
-    };
-
-    // Responsive events for iOS
-    openSheetBtn.addEventListener('touchend', (e) => { e.preventDefault(); toggleSheet(true); });
-    closeSheetBtn.addEventListener('touchend', (e) => { e.preventDefault(); toggleSheet(false); });
-    diceBtn.addEventListener('touchend', (e) => { e.preventDefault(); window.rollD20(); });
-    
-    // Fallbacks
-    openSheetBtn.onclick = () => toggleSheet(true);
-    closeSheetBtn.onclick = () => toggleSheet(false);
-    diceBtn.onclick = () => window.rollD20();
-
-    // --- AI LOGIC ---
-    let aiChat = null;
-
-    async function initAI() {
-        const key = document.getElementById('key').innerText.trim();
-        if (key.length < 10 || key === "PASTE_KEY_HERE") {
-            append('ai', "⚠️ API Key missing! Open SHEET and paste your Gemini Key.");
-            return null;
+        addMessage('user', text);
+        document.getElementById('input').value = "";
+        
+        const key = document.getElementById('key').innerText;
+        if(key.length < 10 || key.includes("PASTE")) {
+            addMessage('ai', "⚠️ Please set your API Key in the Sheet first.");
+            return;
         }
+
         try {
             const genAI = new GoogleGenerativeAI(key);
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            return model.startChat({ history: [] });
+            const chat = model.startChat({ history: [] });
+            
+            const result = await chat.sendMessage(`[Character: ${document.getElementById('name').innerText}] ${text}`);
+            addMessage('ai', result.response.text());
         } catch(e) {
-            append('ai', "❌ Failed to connect to AI. Check your Key.");
-            return null;
+            addMessage('ai', "❌ Connection Error. Check your API Key.");
         }
-    }
-
-    async function handleSend() {
-        const text = userInput.value.trim();
-        if (!text) return;
-
-        if (!aiChat) aiChat = await initAI();
-        if (!aiChat) return;
-
-        append('user', text);
-        userInput.value = "";
-        
-        try {
-            const charName = document.getElementById('name').innerText;
-            const result = await aiChat.sendMessage(`[Character: ${charName}] ${text}`);
-            append('ai', result.response.text());
-        } catch (e) {
-            append('ai', "❌ Error: API Key invalid or connection lost.");
-        }
-    }
-
-    sendBtn.addEventListener('touchend', (e) => { e.preventDefault(); handleSend(); });
-    sendBtn.onclick = handleSend;
-
-    // --- DICE ROLLER ---
-    window.rollD20 = () => {
-        const modValue = document.getElementById('mod').innerText;
-        const mod = parseInt(modValue) || 0;
-        const r = Math.floor(Math.random() * 20) + 1;
-        const total = r + mod;
-        append('dice', `🎲 ROLL: ${total} (${r} + ${mod})`);
-        userInput.value = `I rolled a ${total} for that.`;
     };
-
-    function append(role, text) {
-        const d = document.createElement('div');
-        d.className = `msg ${role}`;
-        d.innerText = text;
-        chatContainer.appendChild(d);
-        // Scroll to bottom
-        setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 50);
-    }
 </script>
 
 </body>
