@@ -1,13 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dungeon AI</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root { --bg: #121212; --panel: #1e1e1e; --text: #ffffff; --accent: #0a84ff; --dice: #34c759; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Chat History */
+        #chat { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 20px; }
+        .msg { max-width: 85%; padding: 12px; border-radius: 18px; font-size: 16px; line-height: 1.4; word-wrap: break-word; }
+        .ai { align-self: flex-start; background: var(--panel); border-bottom-left-radius: 4px; }
+        .user { align-self: flex-end; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+        .dice { align-self: center; background: var(--dice); font-weight: bold; font-size: 14px; color: white; }
+
+        /* Bottom Controls */
+        #controls { background: #000; padding: 10px; display: flex; flex-direction: column; gap: 8px; padding-bottom: env(safe-area-inset-bottom, 20px); border-top: 1px solid #333; }
+        .row { display: flex; gap: 8px; }
+        textarea { flex: 1; background: #222; color: #fff; border: 1px solid #444; border-radius: 12px; padding: 10px; font-size: 16px; resize: none; -webkit-appearance: none; }
+        button { border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; padding: 12px; -webkit-tap-highlight-color: transparent; }
+        .btn-blue { background: var(--accent); color: white; }
+        .btn-dark { background: #333; color: white; }
+
+        /* Character Sheet Overlay */
+        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; padding: 20px; box-sizing: border-box; }
+        .sheet-card { background: var(--panel); padding: 20px; border-radius: 20px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-btn { position: absolute; top: 10px; right: 15px; background: none; font-size: 24px; color: #777; padding: 5px; }
+        .editable { color: var(--accent); border-bottom: 1px dashed var(--accent); margin-bottom: 15px; display: inline-block; font-size: 18px; min-width: 50px; outline: none; }
+        label { color: #888; font-size: 12px; text-transform: uppercase; display: block; margin-top: 10px; }
+        #inv { width: 100%; height: 120px; background: #111; color: #ccc; border: 1px solid #444; border-radius: 8px; margin-top: 10px; padding: 8px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div id="chat">
+    <div class="msg ai">Welcome, adventurer. Open your 📜 SHEET to enter your API Key and stats to begin.</div>
+</div>
+
+<div id="controls">
+    <div class="row">
+        <button class="btn-dark" id="open-sheet" style="flex: 1;">📜 SHEET</button>
+        <button class="btn-dark" style="flex: 1;" id="dice-btn">🎲 ROLL d20</button>
+    </div>
+    <div class="row">
+        <textarea id="input" rows="1" placeholder="What do you do?"></textarea>
+        <button class="btn-blue" id="send">Send</button>
+    </div>
+</div>
+
+<div id="sheet">
+    <div class="sheet-card">
+        <button class="close-btn" id="close-sheet">✕</button>
+        <h2 style="margin-top:0">Character</h2>
+        
+        <label>Gemini API Key</label>
+        <div id="key" class="editable" contenteditable="true" style="font-size:10px; word-break: break-all;">PASTE_KEY_HERE</div>
+        
+        <div style="display: flex; gap: 20px;">
+            <div style="flex:1">
+                <label>Name</label>
+                <div id="name" class="editable" contenteditable="true">Kaelen</div>
+            </div>
+            <div style="flex:1">
+                <label>D20 Mod</label>
+                <div id="mod" class="editable" contenteditable="true">5</div>
+            </div>
+        </div>
+
+        <label>Inventory & Notes</label>
+        <textarea id="inv" placeholder="Items, gold, HP..."></textarea>
+        <p style="font-size: 10px; color: #555; margin-top: 15px;">Stats save automatically to your iPhone.</p>
+    </div>
+</div>
+
 <script type="module">
     import { GoogleGenerativeAI } from "https://cdn.jsdelivr.net/npm/@google/generative-ai@0.14.0/dist/index.js";
 
-    // --- ELEMENTS ---
+    // --- SETUP & ELEMENTS ---
     const chatContainer = document.getElementById('chat');
     const userInput = document.getElementById('input');
     const sendBtn = document.getElementById('send');
     const sheetModal = document.getElementById('sheet');
     const openSheetBtn = document.getElementById('open-sheet');
-    const closeSheetBtn = document.querySelector('#sheet button');
+    const closeSheetBtn = document.getElementById('close-sheet');
+    const diceBtn = document.getElementById('dice-btn');
 
     // --- AUTO-SAVE LOGIC ---
     const fields = ['key', 'name', 'mod', 'inv'];
@@ -26,13 +104,15 @@
         sheetModal.style.display = show ? 'flex' : 'none';
     };
 
-    // Use 'touchend' for snappy response on iOS
+    // Responsive events for iOS
     openSheetBtn.addEventListener('touchend', (e) => { e.preventDefault(); toggleSheet(true); });
     closeSheetBtn.addEventListener('touchend', (e) => { e.preventDefault(); toggleSheet(false); });
+    diceBtn.addEventListener('touchend', (e) => { e.preventDefault(); window.rollD20(); });
     
-    // Fallback for desktop testing
+    // Fallbacks
     openSheetBtn.onclick = () => toggleSheet(true);
     closeSheetBtn.onclick = () => toggleSheet(false);
+    diceBtn.onclick = () => window.rollD20();
 
     // --- AI LOGIC ---
     let aiChat = null;
@@ -40,12 +120,17 @@
     async function initAI() {
         const key = document.getElementById('key').innerText.trim();
         if (key.length < 10 || key === "PASTE_KEY_HERE") {
-            append('ai', "⚠️ Please open the SHEET and paste your API Key first!");
+            append('ai', "⚠️ API Key missing! Open SHEET and paste your Gemini Key.");
             return null;
         }
-        const genAI = new GoogleGenerativeAI(key);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        return model.startChat({ history: [] });
+        try {
+            const genAI = new GoogleGenerativeAI(key);
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            return model.startChat({ history: [] });
+        } catch(e) {
+            append('ai', "❌ Failed to connect to AI. Check your Key.");
+            return null;
+        }
     }
 
     async function handleSend() {
@@ -63,7 +148,7 @@
             const result = await aiChat.sendMessage(`[Character: ${charName}] ${text}`);
             append('ai', result.response.text());
         } catch (e) {
-            append('ai', "❌ Error: API Key might be invalid or expired.");
+            append('ai', "❌ Error: API Key invalid or connection lost.");
         }
     }
 
@@ -72,11 +157,12 @@
 
     // --- DICE ROLLER ---
     window.rollD20 = () => {
-        const mod = parseInt(document.getElementById('mod').innerText) || 0;
+        const modValue = document.getElementById('mod').innerText;
+        const mod = parseInt(modValue) || 0;
         const r = Math.floor(Math.random() * 20) + 1;
         const total = r + mod;
         append('dice', `🎲 ROLL: ${total} (${r} + ${mod})`);
-        userInput.value = `I rolled a ${total}`;
+        userInput.value = `I rolled a ${total} for that.`;
     };
 
     function append(role, text) {
@@ -84,6 +170,10 @@
         d.className = `msg ${role}`;
         d.innerText = text;
         chatContainer.appendChild(d);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        // Scroll to bottom
+        setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 50);
     }
 </script>
+
+</body>
+</html>
