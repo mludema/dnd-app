@@ -3,108 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dungeon Master: Icons</title>
+    <title>Dungeon Master: Scroll Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #1a1614; --panel: #2a231e; --text: #e0d0b8; --gold: #c5a059; --accent: #8b3a3a; --magic: #4a69bd; }
-        body { background: var(--bg); color: var(--text); font-family: 'Lato', sans-serif; margin: 0; padding-bottom: 120px; }
-        h2, button, .cinzel { font-family: 'Cinzel', serif; }
+        :root { 
+            --gold: #c5a059; 
+            --accent: #8b3a3a; 
+            --parchment: #d2b48c;
+            --ink: #2a1e12;
+        }
+
+        /* WEATHERED SCROLL BACKGROUND */
+        body { 
+            background-color: #1a1614;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(210, 180, 140, 0.1) 0%, rgba(0,0,0,0.5) 100%),
+                url('https://www.transparenttextures.com/patterns/papyrus-dark.png');
+            color: #e0d0b8; 
+            font-family: 'Lato', sans-serif; 
+            margin: 0; 
+            padding-bottom: 160px; 
+        }
 
         /* CHAT */
         #chat { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 12px; border: 1px solid #444; border-radius: 4px; line-height: 1.5; max-width: 85%; }
-        .ai { background: var(--panel); border-left: 4px solid var(--gold); align-self: flex-start; }
-        .user { background: #2d3436; border-right: 4px solid var(--accent); align-self: flex-end; }
-        .dice-msg { background: #000; color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 10px auto; padding: 5px 15px; width: fit-content; font-size: 14px; border-radius: 4px; }
+        .msg { padding: 12px; border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 4px; line-height: 1.5; max-width: 85%; background: rgba(0,0,0,0.4); }
+        .ai { border-left: 4px solid var(--gold); align-self: flex-start; }
+        .user { border-right: 4px solid var(--accent); align-self: flex-end; }
+        .dice-msg { background: var(--ink); color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 10px auto; padding: 5px 15px; font-family: 'Cinzel'; border-radius: 4px; }
 
         /* FIXED BOTTOM CONTROLS */
-        #controls { position: fixed; bottom: 0; left: 0; right: 0; background: #0b0908; border-top: 2px solid var(--gold); padding: 10px 10px 30px 10px; z-index: 100; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
-        .row { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
-        textarea { flex: 1; background: #1a1614; color: var(--text); border: 1px solid #444; border-radius: 4px; padding: 12px; font-size: 16px; -webkit-appearance: none; height: 45px; box-sizing: border-box; }
+        #controls { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: #0b0908; border-top: 2px solid var(--gold); 
+            padding: 10px 10px 30px 10px; z-index: 100; 
+        }
+        textarea { 
+            width: 100%; background: #1a1614; color: #fff; 
+            border: 1px solid #444; border-radius: 4px; 
+            padding: 12px; font-size: 16px; -webkit-appearance: none; 
+            box-sizing: border-box; margin-bottom: 10px;
+        }
         
-        /* ICON BUTTONS */
-        .round-btn { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); background: var(--panel); color: var(--gold); font-size: 20px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; cursor: pointer; padding: 0; line-height: 1; }
-        .btn-act { background: var(--accent); color: white; border: 1px solid #a34646; height: 45px; padding: 0 15px; border-radius: 4px; font-family: 'Cinzel'; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+        .button-row { display: flex; justify-content: space-around; align-items: center; gap: 5px; }
+
+        /* FLAT SVG BUTTONS */
+        .icon-btn { 
+            background: var(--panel); border: 1px solid var(--gold); 
+            border-radius: 4px; width: 50px; height: 50px; 
+            display: flex; align-items: center; justify-content: center;
+            fill: var(--gold); cursor: pointer;
+        }
+        .btn-act { background: var(--accent); border-color: #a34646; fill: white; width: 60px; }
 
         /* DRAWERS */
-        .drawer { display: none; position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 2px solid var(--gold); border-radius: 8px; padding: 8px; flex-direction: column; gap: 6px; box-shadow: 0 0 20px #000; z-index: 110; width: 140px; }
-        .drawer button { background: #3e3228; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 11px; text-align: left; font-family: 'Lato', sans-serif; }
-        .drawer.magic-style { border-color: var(--magic); }
-        .drawer.magic-style button { color: #a29bfe; border-color: var(--magic); }
+        .drawer { 
+            display: none; position: absolute; bottom: 130px; 
+            background: #2a231e; border: 2px solid var(--gold); 
+            border-radius: 8px; padding: 8px; flex-direction: column; gap: 6px; width: 140px; 
+        }
+        .drawer button { background: #3e3228; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 12px; text-align: left; }
 
-        /* SHEET */
-        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; padding: 15px; overflow-y: auto; }
-        .sheet-card { background: var(--panel); border: 2px solid var(--gold); padding: 20px; }
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
-        .stat-box { background: #1a1614; border: 1px solid #444; padding: 5px; text-align: center; }
-        .stat-label { font-size: 8px; color: #888; display: block; text-transform: uppercase; }
-        .editable { font-family: 'Cinzel'; border-bottom: 1px dashed #555; outline: none; color: #fff; }
+        /* CHARACTER SCROLL OVERLAY */
+        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; padding: 15px; overflow-y: auto; }
+        .scroll-paper { 
+            background: #e3d5b8; color: #2a1e12; padding: 25px; 
+            border-radius: 5px; box-shadow: 0 0 30px #000;
+            background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
+        }
+        .scroll-paper h2 { font-family: 'Cinzel'; border-bottom: 2px solid #2a1e12; margin-top: 0; }
+        
+        /* SELECT ROLLERS */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .box { display: flex; flex-direction: column; }
+        label { font-size: 9px; font-weight: bold; text-transform: uppercase; }
+        select, input { 
+            background: rgba(0,0,0,0.05); border: none; border-bottom: 1px solid #2a1e12; 
+            font-family: 'Cinzel'; font-size: 16px; padding: 4px 0; color: #2a1e12;
+        }
     </style>
 </head>
 <body>
 
-<div id="chat">
-    <div class="msg ai"><strong>Dungeon Master:</strong><br>The icons of power have been etched into your screen. Enter your Key in the 📜 Scroll.</div>
-</div>
+<div id="chat"></div>
 
 <div id="controls">
-    <div class="row">
+    <textarea id="input" rows="1" placeholder="What do you do?"></textarea>
+    
+    <div class="button-row">
         <div style="position:relative;">
-            <button class="round-btn" onclick="toggleDrawer('dice-drawer')">🎲</button>
+            <button class="icon-btn" onclick="toggleDrawer('dice-drawer')">
+                <svg viewBox="0 0 512 512" width="24" height="24"><path d="M256 24L56 128l40 256 160 104 160-104 40-256zM116 153l108-25 32 88-140-63zm28 206l-23-146 115 52zm112 85l-105-68 105-36zm0-141l-102-46 102-126 102 126zm32 141V297l105 36zm80-85l-115-52 115-52zm-33-146l108 25-140 63z"/></svg>
+            </button>
             <div id="dice-drawer" class="drawer"><button onclick="roll(4)">d4</button><button onclick="roll(6)">d6</button><button onclick="roll(8)">d8</button><button onclick="roll(10)">d10</button><button onclick="roll(12)">d12</button><button onclick="roll(20)">d20</button></div>
         </div>
 
         <div style="position:relative;">
-            <button class="round-btn" onclick="toggleDrawer('skills-drawer')">📜</button>
-            <div id="skills-drawer" class="drawer" style="max-height: 250px; overflow-y: auto;">
-                <button onclick="skillRoll('Athletics','str')">Athletics</button><button onclick="skillRoll('Acrobatics','dex')">Acrobatics</button><button onclick="skillRoll('Stealth','dex')">Stealth</button><button onclick="skillRoll('Arcana','int')">Arcana</button><button onclick="skillRoll('Perception','wis')">Perception</button><button onclick="skillRoll('Insight','wis')">Insight</button><button onclick="skillRoll('Persuasion','cha')">Persuasion</button>
-            </div>
+            <button class="icon-btn" onclick="toggleDrawer('skills-drawer')">
+                <svg viewBox="0 0 512 512" width="24" height="24"><path d="M448 352V64c0-35.3-28.7-64-64-64H96C60.7 0 32 28.7 32 64v384c0 35.3 28.7 64 64 64h288c35.3 0 64-28.7 64-64v-32c0-17.7-14.3-32-32-32s-32 14.3-32 32v32H96V64h288v288H448zM160 128h160v32H160v-32zm0 64h160v32H160v-32zm0 64h96v32H160v-32z"/></svg>
+            </button>
+            <div id="skills-drawer" class="drawer"><button onclick="skillRoll('Athletics','str')">Athletics</button><button onclick="skillRoll('Stealth','dex')">Stealth</button><button onclick="skillRoll('Insight','wis')">Insight</button><button onclick="skillRoll('Perception','wis')">Perception</button></div>
         </div>
 
         <div style="position:relative;">
-            <button class="round-btn" style="border-color:var(--magic); color:var(--magic);" onclick="toggleDrawer('spell-drawer')">✨</button>
-            <div id="spell-drawer" class="drawer magic-style" style="max-height: 250px; overflow-y: auto;">
-                <button onclick="spellCast('Fire Bolt','int','1d10')">Fire Bolt</button>
-                <button onclick="spellCast('Cure Wounds','wis','1d8')">Cure Wounds</button>
-                <button onclick="spellCast('Magic Missile','int','3d4+3')">Magic Missile</button>
-                <button onclick="spellCast('Eldritch Blast','cha','1d10')">Eldritch Blast</button>
-            </div>
+            <button class="icon-btn" onclick="toggleDrawer('spell-drawer')">
+                <svg viewBox="0 0 512 512" width="24" height="24"><path d="M256 0l-50 150L56 200l150 50L256 400l50-150 150-50-150-50zM100 350l-20 60-60 20 60 20 20 60 20-60 60-20-60-20z"/></svg>
+            </button>
+            <div id="spell-drawer" class="drawer"><button onclick="spellCast('Fire Bolt','int','1d10')">Fire Bolt</button><button onclick="spellCast('Cure Wounds','wis','1d8')">Cure Wounds</button></div>
         </div>
 
-        <textarea id="input" rows="1" placeholder="Action..."></textarea>
-        
-        <button class="btn-act" id="sendBtn">⚔️</button>
+        <button class="icon-btn" onclick="openSheet()">
+            <svg viewBox="0 0 512 512" width="24" height="24"><path d="M256 48c-114.9 0-208 93.1-208 208s93.1 208 208 208 208-93.1 208-208S370.9 48 256 48zm0 320c-61.9 0-112-50.1-112-112s50.1-112 112-112 112 50.1 112 112-50.1 112-112 112z"/></svg>
+        </button>
+
+        <button class="icon-btn btn-act" id="sendBtn">
+            <svg viewBox="0 0 512 512" width="24" height="24"><path d="M472.4 72.3c-10.4-10.4-27.2-10.4-37.6 0l-90.4 90.4-44.5-44.5 90.4-90.4c10.4-10.4 10.4-27.2 0-37.6s-27.2-10.4-37.6 0l-90.4 90.4-44.5-44.5 90.4-90.4c10.4-10.4 10.4-27.2 0-37.6s-27.2-10.4-37.6 0L42.3 234c-10.4 10.4-10.4 27.2 0 37.6l44.5 44.5-90.4 90.4c-10.4 10.4-10.4 27.2 0 37.6s27.2 10.4 37.6 0l90.4-90.4 44.5 44.5-90.4 90.4c-10.4 10.4-10.4 27.2 0 37.6s27.2 10.4 37.6 0l191.7-191.7c10.4-10.4 10.4-27.2 0-37.6l-44.5-44.5 90.4-90.4c10.4-10.4 10.4-27.2 0-37.6z"/></svg>
+        </button>
     </div>
-    <button onclick="openSheet()" style="width:100%; background:none; border:none; color:var(--gold); font-size:10px; margin-top:10px; font-family:'Cinzel';">📜 OPEN CHARACTER SCROLL</button>
 </div>
 
 <div id="sheet">
-    <div class="sheet-card">
-        <h2 style="color:var(--gold); margin-top:0;">Character Scroll <button onclick="closeSheet()" style="float:right; background:none; border:none; color:#777;">✕</button></h2>
-        <div style="background:#000; padding:10px; margin-bottom:10px; border:1px solid #333;">
-            <span class="stat-label">API KEY</span>
-            <div id="key" class="editable" contenteditable="true" style="font-size:10px; word-break:break-all;">PASTE_KEY_HERE</div>
+    <div class="scroll-paper">
+        <h2>Character Scroll <button onclick="closeSheet()" style="float:right; background:none; border:none; font-size:24px;">✕</button></h2>
+        
+        <div class="grid">
+            <div class="box"><label>Name</label><input type="text" id="name" value="Hero"></div>
+            <div class="box"><label>Level</label><select id="level"></select></div>
+            <div class="box"><label>Class</label><input type="text" id="class" value="Fighter"></div>
         </div>
-        <div class="stat-grid">
-            <div class="stat-box"><span class="stat-label">NAME</span><div id="name" class="editable" contenteditable="true">Hero</div></div>
-            <div class="stat-box"><span class="stat-label">CLASS</span><div id="class" class="editable" contenteditable="true">Mage</div></div>
-            <div class="stat-box"><span class="stat-label">LVL</span><div id="level" class="editable" contenteditable="true">1</div></div>
+
+        <div class="grid" id="attr-grid"></div>
+
+        <label>Notes & Inventory</label>
+        <textarea id="inv" style="width:100%; height:80px; background:rgba(0,0,0,0.05); color:#2a1e12; border:1px solid #2a1e12;"></textarea>
+
+        <div style="margin-top:20px; padding-top:15px; border-top:1px dashed #2a1e12;">
+            <label>API Key</label>
+            <input type="password" id="key" style="width:100%; font-size:10px;">
         </div>
-        <div class="stat-grid">
-            <div class="stat-box"><span class="stat-label">STR</span><div id="str" class="editable" contenteditable="true">10</div></div>
-            <div class="stat-box"><span class="stat-label">DEX</span><div id="dex" class="editable" contenteditable="true">10</div></div>
-            <div class="stat-box"><span class="stat-label">CON</span><div id="con" class="editable" contenteditable="true">10</div></div>
-            <div class="stat-box"><span class="stat-label">INT</span><div id="int" class="editable" contenteditable="true">10</div></div>
-            <div class="stat-box"><span class="stat-label">WIS</span><div id="wis" class="editable" contenteditable="true">10</div></div>
-            <div class="stat-box"><span class="stat-label">CHA</span><div id="cha" class="editable" contenteditable="true">10</div></div>
-        </div>
-        <span class="stat-label">INVENTORY / SPELLS</span>
-        <textarea id="inv" style="width:100%; height:100px; background:#111; color:#ccc; border:1px solid #444;"></textarea>
     </div>
 </div>
 
 <script>
-    // Functions remain the same but icons are now in the UI
+    // POPULATE SELECTS
+    const lvlSel = document.getElementById('level');
+    for(let i=1; i<=20; i++) lvlSel.options.add(new Option(i, i));
+
+    const attrs = ['str','dex','con','int','wis','cha'];
+    const grid = document.getElementById('attr-grid');
+    attrs.forEach(a => {
+        grid.innerHTML += `<div class="box"><label>${a}</label><select id="${a}"></select></div>`;
+        const sel = document.getElementById(a);
+        for(let i=1; i<=20; i++) sel.options.add(new Option(i, i));
+        sel.value = 10;
+    });
+
     function toggleDrawer(id) {
         const d = document.getElementById(id);
         const isOpen = d.style.display === 'flex';
@@ -121,24 +174,21 @@
         toggleDrawer('dice-drawer');
     }
 
-    function getMod(attrId) {
-        const score = parseInt(document.getElementById(attrId).innerText) || 10;
-        return Math.floor((score - 10) / 2);
-    }
-
     function skillRoll(name, attr) {
-        const d20 = Math.floor(Math.random() * 20) + 1;
-        const total = d20 + getMod(attr);
-        addMsg('dice-msg', `📜 ${name}: <strong>${total}</strong>`);
-        document.getElementById('input').value = `I rolled a ${total} for ${name}.`;
+        const score = parseInt(document.getElementById(attr).value);
+        const mod = Math.floor((score - 10) / 2);
+        const r = Math.floor(Math.random() * 20) + 1;
+        addMsg('dice-msg', `📜 ${name}: <strong>${r + mod}</strong>`);
+        document.getElementById('input').value = `I rolled a ${r + mod} for ${name}.`;
         toggleDrawer('skills-drawer');
     }
 
     function spellCast(name, attr, dmg) {
-        const d20 = Math.floor(Math.random() * 20) + 1;
-        const attack = d20 + getMod(attr);
-        addMsg('dice-msg', `✨ ${name}: Hit <strong>${attack}</strong> | Power: ${dmg}`);
-        document.getElementById('input').value = `I cast ${name}. Attack roll: ${attack}.`;
+        const score = parseInt(document.getElementById(attr).value);
+        const mod = Math.floor((score - 10) / 2);
+        const r = Math.floor(Math.random() * 20) + 1;
+        addMsg('dice-msg', `✨ ${name}: Hit <strong>${r + mod}</strong>`);
+        document.getElementById('input').value = `I cast ${name}. Attack: ${r + mod}.`;
         toggleDrawer('spell-drawer');
     }
 
@@ -151,16 +201,10 @@
     }
 
     const ids = ['key', 'name', 'level', 'class', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'inv'];
-    function saveData() { ids.forEach(id => {
-        const el = document.getElementById(id);
-        localStorage.setItem('v41_'+id, (id==='inv'?el.value:el.innerText));
-    });}
+    function saveData() { ids.forEach(id => localStorage.setItem('v5_'+id, document.getElementById(id).value)); }
     ids.forEach(id => {
-        const val = localStorage.getItem('v41_'+id);
-        if(val) {
-            const el = document.getElementById(id);
-            if(id==='inv') el.value = val; else el.innerText = val;
-        }
+        const val = localStorage.getItem('v5_'+id);
+        if(val) document.getElementById(id).value = val;
     });
 </script>
 
@@ -173,15 +217,12 @@
         if(!text) return;
         addMsg('user', text);
         document.getElementById('input').value = "";
-        const key = document.getElementById('key').innerText.trim();
+        const key = document.getElementById('key').value.trim();
 
         try {
-            const stats = `[Character: ${document.getElementById('name').innerText}, ${document.getElementById('class').innerText} Lvl ${document.getElementById('level').innerText}]. `;
+            const stats = `[Character: ${document.getElementById('name').value}, ${document.getElementById('class').value} Lvl ${document.getElementById('level').value}]. `;
             const genAI = new GoogleGenerativeAI(key);
-            const model = genAI.getGenerativeModel({ 
-                model: "gemini-1.5-flash",
-                systemInstruction: "You are an expert DM. Maintain the medieval tone. Respect the character stats and history."
-            });
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
             const chat = model.startChat({ history: history.slice(-14) });
             const result = await chat.sendMessage(stats + text);
             const resp = result.response.text();
@@ -189,9 +230,8 @@
             history.push({ role: "user", parts: [{ text: text }] });
             history.push({ role: "model", parts: [{ text: resp }] });
             localStorage.setItem('campaign_log', JSON.stringify(history.slice(-50)));
-        } catch(e) { addMsg('ai', "❌ Spirit Error: Check Key."); }
+        } catch(e) { addMsg('ai', "❌ The spirits are silent. Check Key."); }
     };
 </script>
-
 </body>
 </html>
