@@ -3,84 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dungeon Master: Scroll Edition</title>
+    <title>Dungeon Master Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --gold: #c5a059; 
-            --accent: #8b3a3a; 
-            --parchment: #d2b48c;
-            --ink: #2a1e12;
-        }
-
-        /* WEATHERED SCROLL BACKGROUND */
+        :root { --gold: #c5a059; --accent: #8b3a3a; --parchment: #e3d5b8; --ink: #2a1e12; }
         body { 
-            background-color: #1a1614;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(210, 180, 140, 0.1) 0%, rgba(0,0,0,0.5) 100%),
-                url('https://www.transparenttextures.com/patterns/papyrus-dark.png');
-            color: #e0d0b8; 
-            font-family: 'Lato', sans-serif; 
-            margin: 0; 
-            padding-bottom: 160px; 
+            background: #1a1614 url('https://www.transparenttextures.com/patterns/papyrus-dark.png');
+            color: #e0d0b8; font-family: 'Lato', sans-serif; margin: 0; padding-bottom: 140px; overflow-x: hidden;
         }
+        #chat { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 12px; border: 1px solid rgba(197, 160, 89, 0.2); border-radius: 4px; line-height: 1.4; max-width: 85%; background: rgba(0,0,0,0.3); }
+        .ai { border-left: 3px solid var(--gold); align-self: flex-start; }
+        .user { border-right: 3px solid var(--accent); align-self: flex-end; }
+        .dice-msg { background: #000; color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 5px auto; padding: 5px 12px; font-family: 'Cinzel'; font-size: 13px; border-radius: 4px; }
 
-        /* CHAT */
-        #chat { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 12px; border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 4px; line-height: 1.5; max-width: 85%; background: rgba(0,0,0,0.4); }
-        .ai { border-left: 4px solid var(--gold); align-self: flex-start; }
-        .user { border-right: 4px solid var(--accent); align-self: flex-end; }
-        .dice-msg { background: var(--ink); color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 10px auto; padding: 5px 15px; font-family: 'Cinzel'; border-radius: 4px; }
-
-        /* FIXED BOTTOM CONTROLS */
-        #controls { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: #0b0908; border-top: 2px solid var(--gold); 
-            padding: 10px 10px 30px 10px; z-index: 100; 
-        }
-        textarea { 
-            width: 100%; background: #1a1614; color: #fff; 
-            border: 1px solid #444; border-radius: 4px; 
-            padding: 12px; font-size: 16px; -webkit-appearance: none; 
-            box-sizing: border-box; margin-bottom: 10px;
-        }
-        
-        .button-row { display: flex; justify-content: space-around; align-items: center; gap: 5px; }
-
-        /* FLAT SVG BUTTONS */
-        .icon-btn { 
-            background: var(--panel); border: 1px solid var(--gold); 
-            border-radius: 4px; width: 50px; height: 50px; 
-            display: flex; align-items: center; justify-content: center;
-            fill: var(--gold); cursor: pointer;
-        }
-        .btn-act { background: var(--accent); border-color: #a34646; fill: white; width: 60px; }
+        /* BOTTOM UI */
+        #controls { position: fixed; bottom: 0; left: 0; right: 0; background: #0b0908; border-top: 2px solid var(--gold); padding: 10px 10px 30px 10px; z-index: 100; }
+        textarea { width: 100%; background: #1a1614; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 12px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
+        .button-row { display: flex; justify-content: space-between; gap: 6px; }
+        .icon-btn { background: #2a231e; border: 1px solid var(--gold); border-radius: 6px; width: 55px; height: 50px; display: flex; align-items: center; justify-content: center; fill: var(--gold); }
+        .btn-act { background: var(--accent); fill: white; border-color: #a34646; flex-grow: 1; }
 
         /* DRAWERS */
-        .drawer { 
-            display: none; position: absolute; bottom: 130px; 
-            background: #2a231e; border: 2px solid var(--gold); 
-            border-radius: 8px; padding: 8px; flex-direction: column; gap: 6px; width: 140px; 
-        }
-        .drawer button { background: #3e3228; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 12px; text-align: left; }
+        .drawer { display: none; position: absolute; bottom: 135px; background: #2a231e; border: 2px solid var(--gold); border-radius: 8px; padding: 8px; flex-direction: column; gap: 5px; width: 160px; z-index: 110; max-height: 300px; overflow-y: auto; }
+        .drawer button { background: #3e3228; color: var(--gold); border: 1px solid var(--gold); padding: 8px; border-radius: 4px; font-size: 11px; text-align: left; }
 
-        /* CHARACTER SCROLL OVERLAY */
-        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; padding: 15px; overflow-y: auto; }
+        /* CHARACTER SCROLL (FIXED CUTOFF) */
+        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; padding: 10px; padding-top: 30px; }
         .scroll-paper { 
-            background: #e3d5b8; color: #2a1e12; padding: 25px; 
-            border-radius: 5px; box-shadow: 0 0 30px #000;
-            background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
+            background: var(--parchment) url('https://www.transparenttextures.com/patterns/parchment.png');
+            color: var(--ink); padding: 20px; border-radius: 4px; box-shadow: 0 0 40px #000;
+            max-height: 85vh; overflow-y: auto; position: relative;
         }
-        .scroll-paper h2 { font-family: 'Cinzel'; border-bottom: 2px solid #2a1e12; margin-top: 0; }
-        
-        /* SELECT ROLLERS */
+        .scroll-paper h2 { font-family: 'Cinzel'; border-bottom: 2px solid var(--ink); margin: 0 0 15px 0; font-size: 20px; }
+        .close-sheet { position: absolute; top: 15px; right: 15px; font-size: 24px; border: none; background: none; color: var(--ink); }
+
+        /* GRID LOGIC */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .box { display: flex; flex-direction: column; }
-        label { font-size: 9px; font-weight: bold; text-transform: uppercase; }
-        select, input { 
-            background: rgba(0,0,0,0.05); border: none; border-bottom: 1px solid #2a1e12; 
-            font-family: 'Cinzel'; font-size: 16px; padding: 4px 0; color: #2a1e12;
-        }
+        label { font-size: 9px; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+        select, input { background: rgba(0,0,0,0.05); border: none; border-bottom: 1px solid var(--ink); font-family: 'Cinzel'; font-size: 15px; color: var(--ink); outline: none; }
     </style>
 </head>
 <body>
@@ -88,64 +50,68 @@
 <div id="chat"></div>
 
 <div id="controls">
-    <textarea id="input" rows="1" placeholder="What do you do?"></textarea>
-    
+    <textarea id="input" rows="1" placeholder="Type your action..."></textarea>
     <div class="button-row">
         <div style="position:relative;">
             <button class="icon-btn" onclick="toggleDrawer('dice-drawer')">
                 <svg viewBox="0 0 512 512" width="24" height="24"><path d="M256 24L56 128l40 256 160 104 160-104 40-256zM116 153l108-25 32 88-140-63zm28 206l-23-146 115 52zm112 85l-105-68 105-36zm0-141l-102-46 102-126 102 126zm32 141V297l105 36zm80-85l-115-52 115-52zm-33-146l108 25-140 63z"/></svg>
             </button>
-            <div id="dice-drawer" class="drawer"><button onclick="roll(4)">d4</button><button onclick="roll(6)">d6</button><button onclick="roll(8)">d8</button><button onclick="roll(10)">d10</button><button onclick="roll(12)">d12</button><button onclick="roll(20)">d20</button></div>
+            <div id="dice-drawer" class="drawer">
+                <button onclick="roll(4)">d4 (Minor)</button><button onclick="roll(6)">d6 (Standard)</button><button onclick="roll(8)">d8 (Heavy)</button><button onclick="roll(10)">d10 (Elite)</button><button onclick="roll(12)">d12 (Brutal)</button><button onclick="roll(20)">d20 (Fate)</button>
+            </div>
         </div>
 
         <div style="position:relative;">
             <button class="icon-btn" onclick="toggleDrawer('skills-drawer')">
-                <svg viewBox="0 0 512 512" width="24" height="24"><path d="M448 352V64c0-35.3-28.7-64-64-64H96C60.7 0 32 28.7 32 64v384c0 35.3 28.7 64 64 64h288c35.3 0 64-28.7 64-64v-32c0-17.7-14.3-32-32-32s-32 14.3-32 32v32H96V64h288v288H448zM160 128h160v32H160v-32zm0 64h160v32H160v-32zm0 64h96v32H160v-32z"/></svg>
+                <svg viewBox="0 0 512 512" width="24" height="24"><path d="M448 352V64c0-35.3-28.7-64-64-64H96C60.7 0 32 28.7 32 64v384c0 35.3 28.7 64 64 64h288c35.3 0 64-28.7 64-64v-32c0-17.7-14.3-32-32-32s-32 14.3-32 32v32H96V64h288v288H448z"/></svg>
             </button>
-            <div id="skills-drawer" class="drawer"><button onclick="skillRoll('Athletics','str')">Athletics</button><button onclick="skillRoll('Stealth','dex')">Stealth</button><button onclick="skillRoll('Insight','wis')">Insight</button><button onclick="skillRoll('Perception','wis')">Perception</button></div>
+            <div id="skills-drawer" class="drawer">
+                <button onclick="skillRoll('Acrobatics','dex')">Acrobatics</button><button onclick="skillRoll('Animal Handling','wis')">Animal Handling</button><button onclick="skillRoll('Arcana','int')">Arcana</button><button onclick="skillRoll('Athletics','str')">Athletics</button><button onclick="skillRoll('Deception','cha')">Deception</button><button onclick="skillRoll('History','int')">History</button><button onclick="skillRoll('Insight','wis')">Insight</button><button onclick="skillRoll('Intimidation','cha')">Intimidation</button><button onclick="skillRoll('Investigation','int')">Investigation</button><button onclick="skillRoll('Medicine','wis')">Medicine</button><button onclick="skillRoll('Nature','int')">Nature</button><button onclick="skillRoll('Perception','wis')">Perception</button><button onclick="skillRoll('Performance','cha')">Performance</button><button onclick="skillRoll('Persuasion','cha')">Persuasion</button><button onclick="skillRoll('Religion','int')">Religion</button><button onclick="skillRoll('Sleight of Hand','dex')">Sleight of Hand</button><button onclick="skillRoll('Stealth','dex')">Stealth</button><button onclick="skillRoll('Survival','wis')">Survival</button>
+            </div>
         </div>
 
         <div style="position:relative;">
             <button class="icon-btn" onclick="toggleDrawer('spell-drawer')">
                 <svg viewBox="0 0 512 512" width="24" height="24"><path d="M256 0l-50 150L56 200l150 50L256 400l50-150 150-50-150-50zM100 350l-20 60-60 20 60 20 20 60 20-60 60-20-60-20z"/></svg>
             </button>
-            <div id="spell-drawer" class="drawer"><button onclick="spellCast('Fire Bolt','int','1d10')">Fire Bolt</button><button onclick="spellCast('Cure Wounds','wis','1d8')">Cure Wounds</button></div>
+            <div id="spell-drawer" class="drawer"><button onclick="spellCast('Fire Bolt','int','1d10')">Fire Bolt</button><button onclick="spellCast('Magic Missile','int','3d4')">Magic Missile</button><button onclick="spellCast('Cure Wounds','wis','1d8')">Cure Wounds</button></div>
         </div>
 
         <button class="icon-btn" onclick="openSheet()">
-            <svg viewBox="0 0 512 512" width="24" height="24"><path d="M256 48c-114.9 0-208 93.1-208 208s93.1 208 208 208 208-93.1 208-208S370.9 48 256 48zm0 320c-61.9 0-112-50.1-112-112s50.1-112 112-112 112 50.1 112 112-50.1 112-112 112z"/></svg>
+            <svg viewBox="0 0 512 512" width="24" height="24"><path d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H464c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zM64 128H448v64H64V128zm0 128H448v128H64V256z"/></svg>
         </button>
 
         <button class="icon-btn btn-act" id="sendBtn">
-            <svg viewBox="0 0 512 512" width="24" height="24"><path d="M472.4 72.3c-10.4-10.4-27.2-10.4-37.6 0l-90.4 90.4-44.5-44.5 90.4-90.4c10.4-10.4 10.4-27.2 0-37.6s-27.2-10.4-37.6 0l-90.4 90.4-44.5-44.5 90.4-90.4c10.4-10.4 10.4-27.2 0-37.6s-27.2-10.4-37.6 0L42.3 234c-10.4 10.4-10.4 27.2 0 37.6l44.5 44.5-90.4 90.4c-10.4 10.4-10.4 27.2 0 37.6s27.2 10.4 37.6 0l90.4-90.4 44.5 44.5-90.4 90.4c-10.4 10.4-10.4 27.2 0 37.6s27.2 10.4 37.6 0l191.7-191.7c10.4-10.4 10.4-27.2 0-37.6l-44.5-44.5 90.4-90.4c10.4-10.4 10.4-27.2 0-37.6z"/></svg>
+            <svg viewBox="0 0 512 512" width="24" height="24"><path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480V396.4L369.7 154.1l-255.8 200L21.2 294.3c-11.2-4.8-18.7-15.4-19.1-27.5s5.6-23.7 16.1-29.8l448-256c10.7-6.1 23.9-5.5 34 1.4z"/></svg>
         </button>
     </div>
 </div>
 
 <div id="sheet">
     <div class="scroll-paper">
-        <h2>Character Scroll <button onclick="closeSheet()" style="float:right; background:none; border:none; font-size:24px;">✕</button></h2>
+        <button class="close-sheet" onclick="closeSheet()">✕</button>
+        <h2>The Chronicle</h2>
         
         <div class="grid">
-            <div class="box"><label>Name</label><input type="text" id="name" value="Hero"></div>
+            <div class="box"><label>Identity</label><input type="text" id="name" value="Hero"></div>
             <div class="box"><label>Level</label><select id="level"></select></div>
-            <div class="box"><label>Class</label><input type="text" id="class" value="Fighter"></div>
+            <div class="box"><label>Class</label><input type="text" id="class" value="Wizard"></div>
         </div>
 
         <div class="grid" id="attr-grid"></div>
 
-        <label>Notes & Inventory</label>
-        <textarea id="inv" style="width:100%; height:80px; background:rgba(0,0,0,0.05); color:#2a1e12; border:1px solid #2a1e12;"></textarea>
+        <label>Spellbook & Gear</label>
+        <textarea id="inv" style="width:100%; height:80px; background:rgba(0,0,0,0.05); color:var(--ink); border:1px solid var(--ink); border-radius:4px; margin-bottom:15px;"></textarea>
 
-        <div style="margin-top:20px; padding-top:15px; border-top:1px dashed #2a1e12;">
-            <label>API Key</label>
+        <div style="background:rgba(0,0,0,0.05); padding:10px; border-radius:4px;">
+            <label>Master API Key</label>
             <input type="password" id="key" style="width:100%; font-size:10px;">
         </div>
+        <button onclick="localStorage.removeItem('campaign_log'); location.reload();" style="width:100%; margin-top:15px; background:none; border:1px dashed var(--ink); font-size:10px; padding:5px;">Reset Campaign History</button>
     </div>
 </div>
 
 <script>
-    // POPULATE SELECTS
     const lvlSel = document.getElementById('level');
     for(let i=1; i<=20; i++) lvlSel.options.add(new Option(i, i));
 
@@ -170,25 +136,23 @@
 
     function roll(sides) {
         const r = Math.floor(Math.random() * sides) + 1;
-        addMsg('dice-msg', `🎲 d${sides} Result: <strong>${r}</strong>`);
+        addMsg('dice-msg', `🎲 d${sides} result: <strong>${r}</strong>`);
         toggleDrawer('dice-drawer');
     }
 
     function skillRoll(name, attr) {
-        const score = parseInt(document.getElementById(attr).value);
-        const mod = Math.floor((score - 10) / 2);
+        const mod = Math.floor((parseInt(document.getElementById(attr).value) - 10) / 2);
         const r = Math.floor(Math.random() * 20) + 1;
-        addMsg('dice-msg', `📜 ${name}: <strong>${r + mod}</strong>`);
-        document.getElementById('input').value = `I rolled a ${r + mod} for ${name}.`;
+        addMsg('dice-msg', `📜 ${name}: <strong>${r+mod}</strong> (${r} + ${mod})`);
+        document.getElementById('input').value = `I rolled ${r+mod} for ${name}.`;
         toggleDrawer('skills-drawer');
     }
 
     function spellCast(name, attr, dmg) {
-        const score = parseInt(document.getElementById(attr).value);
-        const mod = Math.floor((score - 10) / 2);
+        const mod = Math.floor((parseInt(document.getElementById(attr).value) - 10) / 2);
         const r = Math.floor(Math.random() * 20) + 1;
-        addMsg('dice-msg', `✨ ${name}: Hit <strong>${r + mod}</strong>`);
-        document.getElementById('input').value = `I cast ${name}. Attack: ${r + mod}.`;
+        addMsg('dice-msg', `✨ ${name} Hit: <strong>${r+mod}</strong> (Power: ${dmg})`);
+        document.getElementById('input').value = `I cast ${name}. Attack roll: ${r+mod}.`;
         toggleDrawer('spell-drawer');
     }
 
@@ -201,9 +165,9 @@
     }
 
     const ids = ['key', 'name', 'level', 'class', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'inv'];
-    function saveData() { ids.forEach(id => localStorage.setItem('v5_'+id, document.getElementById(id).value)); }
+    function saveData() { ids.forEach(id => localStorage.setItem('v6_'+id, document.getElementById(id).value)); }
     ids.forEach(id => {
-        const val = localStorage.getItem('v5_'+id);
+        const val = localStorage.getItem('v6_'+id);
         if(val) document.getElementById(id).value = val;
     });
 </script>
@@ -230,8 +194,9 @@
             history.push({ role: "user", parts: [{ text: text }] });
             history.push({ role: "model", parts: [{ text: resp }] });
             localStorage.setItem('campaign_log', JSON.stringify(history.slice(-50)));
-        } catch(e) { addMsg('ai', "❌ The spirits are silent. Check Key."); }
+        } catch(e) { addMsg('ai', "❌ The Tome is silent. Check your API key."); }
     };
 </script>
+
 </body>
 </html>
