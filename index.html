@@ -30,21 +30,28 @@
         .icon-btn { background: var(--panel); border: 1px solid #3d352b; border-radius: 4px; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; fill: var(--gold); stroke: var(--gold); color: var(--gold) !important; }
         .btn-act { background: var(--accent) !important; fill: #fff !important; stroke: #fff !important; color: #fff !important; flex-grow: 1; margin-left: 5px; }
 
-        /* MODALS & DRAWERS */
-        .drawer, .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; padding: 15px; }
-        .skills-pop { position: absolute; bottom: 135px; background: #0b0908; border: 1px solid var(--gold); width: 220px; max-height: 300px; overflow-y: auto; display: none; flex-direction: column; gap: 4px; padding: 8px; z-index: 110; }
-        .skills-pop button { background: #1a1614; color: var(--gold) !important; border: 1px solid #333; padding: 8px; font-family: 'Cinzel'; text-transform: uppercase; text-align: left; font-size: 10px; }
-        
-        .sheet-content { background: var(--bg) url('https://www.transparenttextures.com/patterns/papyrus-dark.png'); color: var(--text); padding: 25px; border: 1px solid var(--gold); max-height: 90vh; overflow-y: auto; position: relative; }
+        /* MODALS */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; padding: 15px; }
+        .sheet-content { background: var(--bg) url('https://www.transparenttextures.com/patterns/papyrus-dark.png'); color: var(--text); padding: 25px; border: 1px solid var(--gold); max-height: 95vh; overflow-y: auto; position: relative; }
         .close-btn { position: absolute; top: 10px; right: 10px; font-size: 24px; color: var(--gold); background: none; border: none; }
         
-        .header-row { display: grid; grid-template-columns: 1fr; margin-bottom: 10px; }
-        .sub-header-row { display: grid; grid-template-columns: 80px 1fr; gap: 15px; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-        .box { display: flex; flex-direction: column; border-bottom: 1px solid #333; }
-        label { font-size: 8px; color: var(--gold); text-transform: uppercase; margin-bottom: 2px; }
-        select, input, textarea.inv-area { background: transparent; border: none; font-family: 'Cinzel'; font-size: 16px; color: var(--gold) !important; appearance: none; -webkit-appearance: none; }
-        textarea.inv-area { font-family: 'Lato'; font-size: 15px; width: 100%; height: 300px; border: 1px solid #333; padding: 10px; }
+        .search-input { width: 100%; background: #000; color: var(--gold); border: 1px solid var(--gold); padding: 12px; margin-bottom: 10px; font-family: 'Cinzel'; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; border-bottom: 1px solid #222; font-family: 'Cinzel'; font-size: 13px; }
+        .result-box { background: #1a1614; border: 1px solid #444; margin-bottom: 20px; max-height: 150px; overflow-y: auto; }
+        
+        /* DESCRIPTION BOX */
+        .desc-box { background: rgba(0,0,0,0.8); border: 1px double var(--gold); padding: 15px; margin: 10px 0; display: none; border-radius: 4px; }
+        .desc-box h4 { margin: 0 0 10px 0; color: var(--gold); font-family: 'Cinzel'; }
+        .desc-box p { font-size: 13px; line-height: 1.4; margin-bottom: 15px; }
+        .cast-btn { background: var(--gold); color: #000; border: none; padding: 10px 20px; font-family: 'Cinzel'; font-weight: bold; width: 100%; border-radius: 2px; }
+
+        .skills-pop { position: absolute; bottom: 135px; background: #0b0908; border: 1px solid var(--gold); width: 200px; max-height: 350px; overflow-y: auto; display: none; flex-direction: column; z-index: 110; }
+        .skills-pop button { background: #1a1614; color: var(--gold) !important; border: none; border-bottom: 1px solid #222; padding: 14px; font-family: 'Cinzel'; text-transform: uppercase; text-align: left; font-size: 11px; width: 100%; }
+
+        .box { display: flex; flex-direction: column; border-bottom: 1px solid #333; margin-bottom: 10px; }
+        label { font-size: 9px; color: var(--gold); text-transform: uppercase; margin-bottom: 2px; }
+        select, input { background: transparent; border: none; font-family: 'Cinzel'; font-size: 16px; color: var(--gold) !important; appearance: none; -webkit-appearance: none; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     </style>
 </head>
 <body>
@@ -66,48 +73,50 @@
     <div class="button-row">
         <button class="icon-btn" onclick="toggleDice()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5zM12 22V12M3 7l9 5 9-5M3 17l9-5 9 5"/></svg></button>
         <button class="icon-btn" onclick="toggleSkills()"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button>
-        <button class="icon-btn" onclick="openInventory()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19,17a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V9L12,3l7,6Z"/><path d="M12,14a3,3,0,1,0,3,3A3,3,0,0,0,12,14Zm0,4a1,1,0,1,1,1-1A1,1,0,0,1,12,18Z"/></svg></button>
-        <button class="icon-btn" onclick="toggleDrawer('spell-drawer')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2L22 11.6l-5.6 4.4L17.8 24 12 20.2 6.2 24 7.6 16l-5.6-4.4 7.6-2.4L12 2z"/></svg></button>
-        <button class="icon-btn" onclick="openSheet()"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+        <button class="icon-btn" onclick="openModal('inventory-modal')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19,17a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V9L12,3l7,6Z"/><path d="M12,14a3,3,0,1,0,3,3A3,3,0,0,0,12,14Zm0,4a1,1,0,1,1,1-1A1,1,0,0,1,12,18Z"/></svg></button>
+        <button class="icon-btn" onclick="openModal('spell-modal')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2L22 11.6l-5.6 4.4L17.8 24 12 20.2 6.2 24 7.6 16l-5.6-4.4 7.6-2.4L12 2z"/></svg></button>
+        <button class="icon-btn" onclick="openModal('sheet')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
         <button class="icon-btn btn-act" id="sendBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
     </div>
 </div>
 
 <div id="inventory-modal" class="modal">
     <div class="sheet-content">
-        <button class="close-btn" onclick="closeInventory()">✕</button>
-        <label>Your Possessions</label>
-        <textarea id="inventory-data" class="inv-area" placeholder="Gold: 0&#10;Weapons:&#10;Items:"></textarea>
+        <button class="close-btn" onclick="closeModal('inventory-modal')">✕</button>
+        <label>Find Items</label>
+        <input type="text" id="invSearch" class="search-input" placeholder="Search gear..." oninput="searchAPI('inv')">
+        <div id="invResults" class="result-box"></div>
+        <div id="invDesc" class="desc-box"></div>
+        <label>Equipped Gear</label>
+        <div id="inventory-list"></div>
     </div>
 </div>
 
-<div id="spell-drawer" class="modal">
+<div id="spell-modal" class="modal">
     <div class="sheet-content">
-        <button class="close-btn" onclick="toggleDrawer('spell-drawer')">✕</button>
-        <input type="text" id="libSearch" style="width:100%; background:#000; color:var(--gold); border:1px solid #333; padding:12px; margin-bottom:15px;" placeholder="Search Library..." onkeydown="if(event.key==='Enter') searchSpell()">
+        <button class="close-btn" onclick="closeModal('spell-modal')">✕</button>
+        <label>Great Library</label>
+        <input type="text" id="spellSearch" class="search-input" placeholder="Search spells..." oninput="searchAPI('spell')">
+        <div id="spellResults" class="result-box"></div>
+        <div id="spellDesc" class="desc-box"></div>
+        <label>Known Spells</label>
         <div id="knownSpells"></div>
     </div>
 </div>
 
-<div id="skills-drawer" class="skills-pop">
-    <button onclick="skillRoll('Acrobatics','dex')">Acrobatics</button><button onclick="skillRoll('Animal Handling','wis')">Animal Handling</button><button onclick="skillRoll('Arcana','int')">Arcana</button><button onclick="skillRoll('Athletics','str')">Athletics</button><button onclick="skillRoll('Deception','cha')">Deception</button><button onclick="skillRoll('History','int')">History</button><button onclick="skillRoll('Insight','wis')">Insight</button><button onclick="skillRoll('Intimidation','cha')">Intimidation</button><button onclick="skillRoll('Investigation','int')">Investigation</button><button onclick="skillRoll('Medicine','wis')">Medicine</button><button onclick="skillRoll('Nature','int')">Nature</button><button onclick="skillRoll('Perception','wis')">Perception</button><button onclick="skillRoll('Performance','cha')">Performance</button><button onclick="skillRoll('Persuasion','cha')">Persuasion</button><button onclick="skillRoll('Religion','int')">Religion</button><button onclick="skillRoll('Sleight of Hand','dex')">Sleight of Hand</button><button onclick="skillRoll('Stealth','dex')">Stealth</button><button onclick="skillRoll('Survival','wis')">Survival</button>
-</div>
-
-<div id="sheet" class="modal">
-    <div class="sheet-content">
-        <button class="close-btn" onclick="closeSheet()">✕</button>
-        <div class="header-row"><div class="box"><label>Identity</label><input type="text" id="name" value="Hero"></div></div>
-        <div class="sub-header-row">
-            <div class="box"><label>Level</label><select id="level"></select></div>
-            <div class="box"><label>Class</label><input type="text" id="class" value="Wizard"></div>
-        </div>
-        <div id="attr-grid" class="grid"></div>
-        <label>Master Key</label>
-        <input type="password" id="key" style="width:100%; border-bottom:1px dashed var(--gold);">
-    </div>
-</div>
+<div id="skills-drawer" class="skills-pop"></div>
+<div id="sheet" class="modal"><div class="sheet-content"><button class="close-btn" onclick="closeModal('sheet')">✕</button><div class="box"><label>Identity</label><input type="text" id="name" value="Hero"></div><div style="display:grid; grid-template-columns: 80px 1fr; gap:15px; margin-bottom:15px;"><div class="box"><label>Level</label><select id="level"></select></div><div class="box"><label>Class</label><input type="text" id="class" value="Wizard"></div></div><div id="attr-grid" class="grid"></div><div class="box" style="margin-top:20px;"><label>API Key</label><input type="password" id="key"></div></div></div>
 
 <script>
+    // DATA
+    let inventory = JSON.parse(localStorage.getItem('v15_inv')) || [];
+    let spellbook = JSON.parse(localStorage.getItem('v15_spells')) || [];
+
+    // INIT SKILLS
+    const skills = ['Acrobatics','Animal Handling','Arcana','Athletics','Deception','History','Insight','Intimidation','Investigation','Medicine','Nature','Perception','Performance','Persuasion','Religion','Sleight of Hand','Stealth','Survival'];
+    const skillAttr = {Acrobatics:'dex','Animal Handling':'wis',Arcana:'int',Athletics:'str',Deception:'cha',History:'int',Insight:'wis',Intimidation:'cha',Investigation:'int',Medicine:'wis',Nature:'int',Perception:'wis',Performance:'cha',Persuasion:'cha',Religion:'int','Sleight of Hand':'dex',Stealth:'dex',Survival:'wis'};
+    document.getElementById('skills-drawer').innerHTML = skills.map(s => `<button onclick="skillRoll('${s}','${skillAttr[s]}')">${s}</button>`).join('');
+
     const lvlSel = document.getElementById('level');
     for(let i=1; i<=20; i++) lvlSel.options.add(new Option(i, i));
     const attrs = ['str','dex','con','int','wis','cha'];
@@ -118,61 +127,72 @@
         sel.value = 10;
     });
 
-    function toggleDice() {
-        const d = document.getElementById('dice-drawer');
-        d.style.display = (d.style.display === 'flex') ? 'none' : 'flex';
-    }
-    function toggleSkills() {
-        const d = document.getElementById('skills-drawer');
-        d.style.display = (d.style.display === 'flex') ? 'none' : 'flex';
-    }
-    function openInventory() { document.getElementById('inventory-modal').style.display = 'block'; }
-    function closeInventory() { document.getElementById('inventory-modal').style.display = 'none'; saveData(); }
+    // CORE UI
+    function toggleDice() { const d = document.getElementById('dice-drawer'); d.style.display = (d.style.display==='flex')?'none':'flex'; }
+    function toggleSkills() { const d = document.getElementById('skills-drawer'); d.style.display = (d.style.display==='flex')?'none':'flex'; }
+    function openModal(id) { document.getElementById(id).style.display = 'block'; renderLists(); }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; saveData(); hideDescs(); }
+    function hideDescs() { document.getElementById('invDesc').style.display = 'none'; document.getElementById('spellDesc').style.display = 'none'; }
 
+    // SEARCH
+    async function searchAPI(type) {
+        const query = document.getElementById(type + 'Search').value.toLowerCase().trim().replace(/ /g, '-');
+        if (query.length < 3) return;
+        const endpoint = type === 'inv' ? 'equipment' : 'spells';
+        try {
+            const resp = await fetch(`https://api.open5e.com/${endpoint}/?search=${query}`);
+            const data = await resp.json();
+            document.getElementById(type + 'Results').innerHTML = data.results.slice(0, 5).map(item => 
+                `<div class="list-item" onclick="stickItem('${type}', '${item.name}', '${item.slug}')"><span>＋ ${item.name}</span></div>`
+            ).join('');
+        } catch(e) {}
+    }
+
+    function stickItem(type, name, slug) {
+        const obj = { name, slug };
+        if (type === 'inv') { if(!inventory.find(i=>i.slug===slug)) inventory.push(obj); }
+        else { if(!spellbook.find(s=>s.slug===slug)) spellbook.push(obj); }
+        document.getElementById(type + 'Search').value = "";
+        document.getElementById(type + 'Results').innerHTML = "";
+        renderLists(); saveData();
+    }
+
+    // DESCRIPTIONS
+    async function showDesc(type, slug) {
+        const endpoint = type === 'inv' ? 'equipment' : 'spells';
+        const box = document.getElementById(type + 'Desc');
+        box.style.display = 'block';
+        box.innerHTML = "Refining scroll...";
+        try {
+            const resp = await fetch(`https://api.open5e.com/${endpoint}/${slug}/`);
+            const data = await resp.json();
+            let html = `<div style="text-align:right" onclick="hideDescs()">✕</div><h4>${data.name}</h4>`;
+            html += `<p>${data.desc || data.description || "No description available."}</p>`;
+            if(type === 'spell') html += `<button class="cast-btn" onclick="spellCast('${data.name}')">CAST SPELL</button>`;
+            box.innerHTML = html;
+        } catch(e) { box.innerHTML = "Entry not found in the archives."; }
+    }
+
+    function renderLists() {
+        document.getElementById('inventory-list').innerHTML = inventory.map((item, i) => 
+            `<div class="list-item"><span onclick="showDesc('inv', '${item.slug}')">⚔️ ${item.name}</span><span onclick="removeItem('inv', ${i})" style="color:var(--accent)">×</span></div>`
+        ).join('');
+        document.getElementById('knownSpells').innerHTML = spellbook.map((s, i) => 
+            `<div class="list-item"><span onclick="showDesc('spell', '${s.slug}')">✨ ${s.name}</span><span onclick="removeItem('spell', ${i})" style="color:var(--accent)">×</span></div>`
+        ).join('');
+    }
+
+    function removeItem(type, i) {
+        if(type==='inv') inventory.splice(i,1); else spellbook.splice(i,1);
+        renderLists(); saveData(); hideDescs();
+    }
+
+    // ROLLS
     function roll(s) {
         const r = Math.floor(Math.random()*s)+1;
         addMsg('dice-msg', `🎲 D${s}: <strong>${r}</strong>`);
         document.getElementById('dice-drawer').style.display = 'none';
     }
-
-    let spellbook = JSON.parse(localStorage.getItem('spellbook')) || ['Shield'];
-    async function searchSpell() {
-        const query = document.getElementById('libSearch').value.toLowerCase().trim().replace(/ /g, '-');
-        try {
-            const resp = await fetch(`https://api.open5e.com/spells/${query}/`);
-            const data = await resp.json();
-            if(data.name && !spellbook.includes(data.name)) {
-                spellbook.push(data.name);
-                renderSpells();
-                document.getElementById('libSearch').value = "";
-            }
-        } catch(e) { alert("Not found."); }
-    }
-    function renderSpells() {
-        const container = document.getElementById('knownSpells');
-        container.innerHTML = "";
-        spellbook.forEach((s, i) => {
-            container.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #222;"><span onclick="spellCast('${s}')">✨ ${s}</span><span onclick="forgetSpell(${i})" style="color:var(--accent)">×</span></div>`;
-        });
-        localStorage.setItem('spellbook', JSON.stringify(spellbook));
-    }
-    function forgetSpell(i) { spellbook.splice(i,1); renderSpells(); }
-    function spellCast(n) {
-        const mod = Math.floor((parseInt(document.getElementById('int').value)-10)/2);
-        const r = Math.floor(Math.random()*20)+1;
-        addMsg('dice-msg', `✨ CAST: ${n} | ROLL: <strong>${r+mod}</strong>`);
-        document.getElementById('input').value = `I cast ${n}. (Roll: ${r+mod})`;
-        toggleDrawer('spell-drawer');
-    }
-
-    function toggleDrawer(id) {
-        const d = document.getElementById(id);
-        const isOpen = d.style.display === 'block';
-        d.style.display = isOpen ? 'none' : 'block';
-    }
-    function openSheet() { document.getElementById('sheet').style.display = 'block'; }
-    function closeSheet() { document.getElementById('sheet').style.display = 'none'; saveData(); }
-    
     function skillRoll(n, a) {
         const mod = Math.floor((parseInt(document.getElementById(a).value)-10)/2);
         const r = Math.floor(Math.random()*20)+1;
@@ -180,20 +200,34 @@
         document.getElementById('input').value = `I rolled ${r+mod} for ${n}.`;
         document.getElementById('skills-drawer').style.display = 'none';
     }
+    function spellCast(n) {
+        const mod = Math.floor((parseInt(document.getElementById('int').value)-10)/2);
+        const r = Math.floor(Math.random()*20)+1;
+        addMsg('dice-msg', `✨ CAST: ${n} | ROLL: <strong>${r+mod}</strong>`);
+        document.getElementById('input').value = `I cast ${n}. (Roll: ${r+mod})`;
+        closeModal('spell-modal');
+    }
+
     function addMsg(cls, html) {
         const div = document.createElement('div');
         div.className = 'msg ' + cls; div.innerHTML = html;
         document.getElementById('chat').appendChild(div);
         window.scrollTo(0, document.body.scrollHeight);
     }
-    
-    const ids = ['key', 'name', 'level', 'class', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'inventory-data'];
-    function saveData() { ids.forEach(id => localStorage.setItem('v13_'+id, document.getElementById(id).value)); }
-    ids.forEach(id => {
-        const val = localStorage.getItem('v13_'+id);
-        if(val) document.getElementById(id).value = val;
+
+    function saveData() { 
+        attrs.concat(['key','name','level','class']).forEach(id => {
+            const el = document.getElementById(id);
+            if(el) localStorage.setItem('v15_'+id, el.value);
+        });
+        localStorage.setItem('v15_inv', JSON.stringify(inventory));
+        localStorage.setItem('v15_spells', JSON.stringify(spellbook));
+    }
+    attrs.concat(['key','name','level','class']).forEach(id => {
+        const val = localStorage.getItem('v15_'+id);
+        if(val && document.getElementById(id)) document.getElementById(id).value = val;
     });
-    renderSpells();
+    renderLists();
 </script>
 
 <script type="module">
@@ -204,7 +238,7 @@
         addMsg('user', text); document.getElementById('input').value = "";
         const key = document.getElementById('key').value.trim();
         try {
-            const stats = `[Character: ${document.getElementById('name').value}, ${document.getElementById('class').value} Lvl ${document.getElementById('level').value}]. `;
+            const stats = `[Character: ${document.getElementById('name').value}, ${document.getElementById('class').value} Lvl ${document.getElementById('level').value}]. Inventory: ${inventory.map(i=>i.name).join(', ')}. `;
             const model = new GoogleGenerativeAI(key).getGenerativeModel({ model: "gemini-1.5-flash" });
             const chat = model.startChat({ history: history.slice(-14) });
             const result = await chat.sendMessage(stats + text);
@@ -213,7 +247,7 @@
             history.push({ role: "user", parts: [{ text: text }] });
             history.push({ role: "model", parts: [{ text: resp }] });
             localStorage.setItem('campaign_log', JSON.stringify(history.slice(-50)));
-        } catch(e) { addMsg('ai', "❌ Tome connection lost."); }
+        } catch(e) { addMsg('ai', "❌ Astral signal lost."); }
     };
 </script>
 </body>
