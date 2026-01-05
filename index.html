@@ -3,53 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dungeon AI: Vintage Edition</title>
+    <title>Dungeon AI: Dark Relic</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #c5a059; --accent: #8b3a3a; --parchment: #e3d5b8; --ink: #2a1e12; }
+        :root { --gold: #c5a059; --accent: #8b3a3a; --bg: #0b0908; --panel: #1a1614; --text: #e0d0b8; }
         
         body { 
-            background: #1a1614 url('https://www.transparenttextures.com/patterns/papyrus-dark.png');
-            color: #e0d0b8; font-family: 'Lato', sans-serif; margin: 0; padding-bottom: 140px; overflow-x: hidden;
+            background: var(--bg) url('https://www.transparenttextures.com/patterns/papyrus-dark.png');
+            color: var(--text); font-family: 'Lato', sans-serif; margin: 0; padding-bottom: 140px; overflow-x: hidden;
         }
 
-        /* CHAT BUBBLES */
+        /* CHAT SYSTEM */
         #chat { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
-        .msg { padding: 12px; border: 1px solid rgba(197, 160, 89, 0.2); border-radius: 4px; line-height: 1.4; max-width: 85%; background: rgba(0,0,0,0.5); }
-        .ai { border-left: 3px solid var(--gold); align-self: flex-start; }
-        .user { border-right: 3px solid var(--accent); align-self: flex-end; }
-        .dice-msg { background: #000; color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 5px auto; padding: 6px 12px; font-family: 'Cinzel'; font-size: 13px; }
+        .msg { padding: 12px; border: 1px solid rgba(197, 160, 89, 0.15); border-radius: 2px; line-height: 1.4; max-width: 85%; background: rgba(0,0,0,0.6); }
+        .ai { border-left: 2px solid var(--gold); align-self: flex-start; }
+        .user { border-right: 2px solid var(--accent); align-self: flex-end; }
+        .dice-msg { background: #000; color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 5px auto; padding: 6px 12px; font-family: 'Cinzel'; font-size: 13px; box-shadow: 0 0 10px rgba(197,160,89,0.2); }
 
-        /* NAVIGATION & BUTTONS */
-        #controls { position: fixed; bottom: 0; left: 0; right: 0; background: #0b0908; border-top: 2px solid var(--gold); padding: 10px 10px 30px 10px; z-index: 100; }
-        textarea { width: 100%; background: #1a1614; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 12px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
-        .button-row { display: flex; justify-content: space-between; gap: 6px; }
-        .icon-btn { background: #2a231e; border: 1px solid var(--gold); border-radius: 4px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; fill: var(--gold); stroke: var(--gold); }
-        .btn-act { background: var(--accent); fill: white; border-color: #a34646; flex-grow: 1; }
-
-        /* VINTAGE DRAWERS */
-        .drawer { display: none; position: absolute; bottom: 135px; background: #2a231e; border: 2px solid var(--gold); border-radius: 8px; padding: 10px; flex-direction: column; gap: 6px; width: 220px; z-index: 110; max-height: 350px; overflow-y: auto; box-shadow: 0 0 30px #000; }
-        .drawer button { background: #3e3228; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 11px; text-align: left; font-family: 'Cinzel'; }
-        .search-box { width: 100%; background: #1a1614; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 12px; box-sizing: border-box; margin-bottom: 10px; font-family: 'Lato'; }
+        /* THE "RELIC" UI */
+        #controls { position: fixed; bottom: 0; left: 0; right: 0; background: #050403; border-top: 1px solid var(--gold); padding: 10px 10px 30px 10px; z-index: 100; }
+        textarea { width: 100%; background: #000; color: #fff; border: 1px solid #333; border-radius: 4px; padding: 12px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; outline: none; }
+        textarea:focus { border-color: var(--gold); }
         
-        .spell-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; border: 1px solid #444; margin-bottom: 4px; }
+        .button-row { display: flex; justify-content: space-between; gap: 8px; }
+        .icon-btn { background: var(--panel); border: 1px solid #3d352b; border-radius: 4px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; fill: var(--gold); stroke: var(--gold); transition: all 0.2s; }
+        .icon-btn:active { background: #000; border-color: var(--gold); }
+        .btn-act { background: var(--accent); fill: #fff; stroke: #fff; border-color: #5a2121; flex-grow: 1; }
+
+        /* DRAWERS */
+        .drawer { display: none; position: absolute; bottom: 135px; background: #0b0908; border: 1px solid var(--gold); border-radius: 4px; padding: 10px; flex-direction: column; gap: 6px; width: 220px; z-index: 110; max-height: 350px; overflow-y: auto; box-shadow: 0 0 30px #000; }
+        .drawer button { background: #1a1614; color: var(--gold); border: 1px solid #333; padding: 12px; border-radius: 2px; font-size: 11px; text-align: left; font-family: 'Cinzel'; text-transform: uppercase; letter-spacing: 1px; }
+        .drawer button:active { border-color: var(--gold); color: #fff; }
+        
+        .search-box { width: 100%; background: #000; color: var(--gold); border: 1px solid #333; padding: 10px; border-radius: 4px; font-size: 12px; box-sizing: border-box; margin-bottom: 10px; outline: none; }
+        .spell-item { display: flex; justify-content: space-between; align-items: center; background: #110e0c; padding: 8px; border: 1px solid #222; margin-bottom: 4px; }
         .spell-name { color: var(--gold); font-family: 'Cinzel'; font-size: 11px; cursor: pointer; flex-grow: 1; }
-        .forget-btn { color: var(--accent); font-weight: bold; margin-left: 10px; width: 20px; text-align: center; }
+        .forget-btn { color: var(--accent); font-weight: bold; margin-left: 10px; padding: 5px; }
 
-        /* THE SCROLL (CHARACTER SHEET) */
-        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; padding: 15px; }
-        .scroll-paper { 
-            background: var(--parchment) url('https://www.transparenttextures.com/patterns/parchment.png');
-            color: var(--ink); padding: 25px; border-radius: 4px; box-shadow: 0 0 50px #000;
-            max-height: 85vh; overflow-y: auto; position: relative; border: 1px solid #555;
+        /* UNIFIED CHARACTER SHEET */
+        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; padding: 15px; }
+        .sheet-content { 
+            background: var(--bg) url('https://www.transparenttextures.com/patterns/papyrus-dark.png');
+            color: var(--text); padding: 25px; border-radius: 2px; border: 1px solid var(--gold);
+            max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 0 50px #000;
         }
-        .scroll-paper h2 { font-family: 'Cinzel'; border-bottom: 2px solid var(--ink); margin: 0 0 20px 0; }
-        .close-btn { position: absolute; top: 15px; right: 15px; font-size: 28px; background: none; border: none; color: var(--ink); }
+        .sheet-content h2 { font-family: 'Cinzel'; color: var(--gold); border-bottom: 1px solid var(--gold); margin: 0 0 20px 0; letter-spacing: 2px; }
+        .close-btn { position: absolute; top: 15px; right: 15px; font-size: 24px; background: none; border: none; color: var(--gold); }
 
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .box { display: flex; flex-direction: column; }
-        label { font-size: 9px; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; color: #555; }
-        select, input { background: transparent; border: none; border-bottom: 1px solid var(--ink); font-family: 'Cinzel'; font-size: 16px; color: var(--ink); outline: none; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .box { display: flex; flex-direction: column; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        label { font-size: 9px; font-weight: bold; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; opacity: 0.8; }
+        select, input { background: transparent; border: none; font-family: 'Cinzel'; font-size: 16px; color: #fff; outline: none; -webkit-appearance: none; }
+        textarea#inv { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 4px; font-family: 'Lato'; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -61,7 +66,7 @@
     <div class="button-row">
         <div style="position:relative;">
             <button class="icon-btn" onclick="toggleDrawer('dice-drawer')">
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5zM12 22V12M3 7l9 5 9-5M3 17l9-5 9 5"/></svg>
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5zM12 22V12M3 7l9 5 9-5M3 17l9-5 9 5"/></svg>
             </button>
             <div id="dice-drawer" class="drawer">
                 <button onclick="roll(4)">d4</button><button onclick="roll(6)">d6</button><button onclick="roll(8)">d8</button><button onclick="roll(10)">d10</button><button onclick="roll(12)">d12</button><button onclick="roll(20)">d20</button>
@@ -70,14 +75,10 @@
 
         <div style="position:relative;">
             <button class="icon-btn" onclick="toggleDrawer('skills-drawer')">
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             </button>
             <div id="skills-drawer" class="drawer">
-                <button onclick="skillRoll('Athletics','str')">Athletics</button>
-                <button onclick="skillRoll('Stealth','dex')">Stealth</button>
-                <button onclick="skillRoll('Arcana','int')">Arcana</button>
-                <button onclick="skillRoll('Insight','wis')">Insight</button>
-                <button onclick="skillRoll('Persuasion','cha')">Persuasion</button>
+                <button onclick="skillRoll('Athletics','str')">Athletics</button><button onclick="skillRoll('Stealth','dex')">Stealth</button><button onclick="skillRoll('Arcana','int')">Arcana</button><button onclick="skillRoll('Insight','wis')">Insight</button><button onclick="skillRoll('Persuasion','cha')">Persuasion</button>
             </div>
         </div>
 
@@ -92,7 +93,7 @@
         </div>
 
         <button class="icon-btn" onclick="openSheet()">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </button>
 
         <button class="icon-btn btn-act" id="sendBtn">
@@ -102,9 +103,9 @@
 </div>
 
 <div id="sheet">
-    <div class="scroll-paper">
+    <div class="sheet-content">
         <button class="close-btn" onclick="closeSheet()">✕</button>
-        <h2>The Chronicle</h2>
+        <h2>Hero Chronicle</h2>
         <div class="grid">
             <div class="box"><label>Identity</label><input type="text" id="name" value="Hero"></div>
             <div class="box"><label>Level</label><select id="level"></select></div>
@@ -112,14 +113,15 @@
         </div>
         <div class="grid" id="attr-grid"></div>
         <label>Gear & Lore</label>
-        <textarea id="inv" style="width:100%; height:100px; background:rgba(0,0,0,0.05); color:var(--ink); border:1px solid rgba(0,0,0,0.1); border-radius:4px; margin-bottom:15px;"></textarea>
-        <label>Master API Key</label>
-        <input type="password" id="key" style="width:100%; font-family:sans-serif;">
+        <textarea id="inv" style="width:100%; height:120px; margin-bottom:15px;"></textarea>
+        <label>Secret API Key</label>
+        <input type="password" id="key" style="width:100%; border-bottom: 1px dashed var(--gold);">
+        <button onclick="localStorage.removeItem('campaign_log'); location.reload();" style="width:100%; margin-top:20px; background:none; border:1px solid var(--accent); color:var(--accent); font-size:10px; padding:8px; font-family:'Cinzel';">Erase Campaign Memory</button>
     </div>
 </div>
 
 <script>
-    // INITIALIZATION
+    // CORE INITIALIZATION
     const lvlSel = document.getElementById('level');
     for(let i=1; i<=20; i++) lvlSel.options.add(new Option(i, i));
     const attrs = ['str','dex','con','int','wis','cha'];
@@ -130,9 +132,8 @@
         sel.value = 10;
     });
 
-    // SPELL SYSTEM
-    let spellbook = JSON.parse(localStorage.getItem('spellbook')) || ['Fire Bolt', 'Shield'];
-    
+    // SPELL API SYSTEM
+    let spellbook = JSON.parse(localStorage.getItem('spellbook')) || ['Shield', 'Magic Missile'];
     async function searchSpell() {
         const query = document.getElementById('libSearch').value.toLowerCase().trim().replace(/ /g, '-');
         if(!query) return;
@@ -145,69 +146,56 @@
                 renderSpells();
                 document.getElementById('libSearch').value = "";
             }
-        } catch(e) { alert("This spell is not written in the Great Library."); }
+        } catch(e) { alert("Spell not found in the ancient archives."); }
     }
-
     function renderSpells() {
         const container = document.getElementById('knownSpells');
         container.innerHTML = "";
         spellbook.forEach((s, i) => {
-            container.innerHTML += `
-                <div class="spell-item">
-                    <div class="spell-name" onclick="spellCast('${s}')">✨ ${s}</div>
-                    <div class="forget-btn" onclick="forgetSpell(${i})">×</div>
-                </div>`;
+            container.innerHTML += `<div class="spell-item"><div class="spell-name" onclick="spellCast('${s}')">✨ ${s}</div><div class="forget-btn" onclick="forgetSpell(${i})">×</div></div>`;
         });
         localStorage.setItem('spellbook', JSON.stringify(spellbook));
     }
-
     function forgetSpell(index) { spellbook.splice(index, 1); renderSpells(); }
-
     function spellCast(name) {
         const mod = Math.floor((parseInt(document.getElementById('int').value) - 10) / 2);
         const r = Math.floor(Math.random() * 20) + 1;
-        addMsg('dice-msg', `✨ Cast: ${name} | Roll: <strong>${r+mod}</strong>`);
-        document.getElementById('input').value = `I cast ${name}. (Roll: ${r+mod})`;
+        addMsg('dice-msg', `✨ CAST: ${name.toUpperCase()} | ROLL: <strong>${r+mod}</strong>`);
+        document.getElementById('input').value = `I cast ${name}. (Result: ${r+mod})`;
         toggleDrawer('spell-drawer');
     }
 
-    // CORE UI
+    // INTERFACE LOGIC
     function toggleDrawer(id) {
         const d = document.getElementById(id);
         const isOpen = d.style.display === 'flex';
         document.querySelectorAll('.drawer').forEach(el => el.style.display = 'none');
         d.style.display = isOpen ? 'none' : 'flex';
     }
-
     function openSheet() { document.getElementById('sheet').style.display = 'block'; }
     function closeSheet() { document.getElementById('sheet').style.display = 'none'; saveData(); }
-
     function roll(sides) {
         const r = Math.floor(Math.random() * sides) + 1;
-        addMsg('dice-msg', `🎲 d${sides}: <strong>${r}</strong>`);
+        addMsg('dice-msg', `🎲 D${sides}: <strong>${r}</strong>`);
         toggleDrawer('dice-drawer');
     }
-
     function skillRoll(name, attr) {
         const mod = Math.floor((parseInt(document.getElementById(attr).value) - 10) / 2);
         const r = Math.floor(Math.random() * 20) + 1;
-        addMsg('dice-msg', `📜 ${name}: <strong>${r+mod}</strong>`);
+        addMsg('dice-msg', `📜 ${name.toUpperCase()}: <strong>${r+mod}</strong>`);
         document.getElementById('input').value = `I rolled ${r+mod} for ${name}.`;
         toggleDrawer('skills-drawer');
     }
-
     function addMsg(cls, html) {
         const div = document.createElement('div');
-        div.className = 'msg ' + cls;
-        div.innerHTML = html;
+        div.className = 'msg ' + cls; div.innerHTML = html;
         document.getElementById('chat').appendChild(div);
         window.scrollTo(0, document.body.scrollHeight);
     }
-
     const ids = ['key', 'name', 'level', 'class', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'inv'];
-    function saveData() { ids.forEach(id => localStorage.setItem('v81_'+id, document.getElementById(id).value)); }
+    function saveData() { ids.forEach(id => localStorage.setItem('v9_'+id, document.getElementById(id).value)); }
     ids.forEach(id => {
-        const val = localStorage.getItem('v81_'+id);
+        const val = localStorage.getItem('v9_'+id);
         if(val) document.getElementById(id).value = val;
     });
     renderSpells();
@@ -230,7 +218,7 @@
             history.push({ role: "user", parts: [{ text: text }] });
             history.push({ role: "model", parts: [{ text: resp }] });
             localStorage.setItem('campaign_log', JSON.stringify(history.slice(-50)));
-        } catch(e) { addMsg('ai', "❌ The spirits are silent. Check your API key."); }
+        } catch(e) { addMsg('ai', "❌ Connection to the Astral Plane lost."); }
     };
 </script>
 </body>
