@@ -3,42 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dungeon AI</title>
+    <title>Dungeon AI: Vintage Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #c5a059; --accent: #8b3a3a; --sheet-bg: #f4f1ea; --ink: #1a1a1a; }
-        body { background: #1a1614 url('https://www.transparenttextures.com/patterns/papyrus-dark.png'); color: #e0d0b8; font-family: 'Lato', sans-serif; margin: 0; padding-bottom: 140px; overflow-x: hidden; }
+        :root { --gold: #c5a059; --accent: #8b3a3a; --parchment: #e3d5b8; --ink: #2a1e12; }
         
-        /* CHAT */
-        #chat { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 12px; border-radius: 6px; line-height: 1.4; max-width: 85%; background: rgba(0,0,0,0.4); border: 1px solid rgba(197, 160, 89, 0.2); }
+        body { 
+            background: #1a1614 url('https://www.transparenttextures.com/patterns/papyrus-dark.png');
+            color: #e0d0b8; font-family: 'Lato', sans-serif; margin: 0; padding-bottom: 140px; overflow-x: hidden;
+        }
+
+        /* CHAT BUBBLES */
+        #chat { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 12px; border: 1px solid rgba(197, 160, 89, 0.2); border-radius: 4px; line-height: 1.4; max-width: 85%; background: rgba(0,0,0,0.5); }
         .ai { border-left: 3px solid var(--gold); align-self: flex-start; }
         .user { border-right: 3px solid var(--accent); align-self: flex-end; }
         .dice-msg { background: #000; color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 5px auto; padding: 6px 12px; font-family: 'Cinzel'; font-size: 13px; }
 
-        /* UI CONTROLS */
+        /* NAVIGATION & BUTTONS */
         #controls { position: fixed; bottom: 0; left: 0; right: 0; background: #0b0908; border-top: 2px solid var(--gold); padding: 10px 10px 30px 10px; z-index: 100; }
         textarea { width: 100%; background: #1a1614; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 12px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
-        .button-row { display: flex; justify-content: space-between; gap: 8px; }
-        .icon-btn { background: #2a231e; border: 1px solid var(--gold); border-radius: 8px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; fill: var(--gold); stroke: var(--gold); }
+        .button-row { display: flex; justify-content: space-between; gap: 6px; }
+        .icon-btn { background: #2a231e; border: 1px solid var(--gold); border-radius: 4px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; fill: var(--gold); stroke: var(--gold); }
         .btn-act { background: var(--accent); fill: white; border-color: #a34646; flex-grow: 1; }
 
-        /* DRAWERS */
-        .drawer { display: none; position: absolute; bottom: 135px; background: #1a1614; border: 2px solid var(--gold); border-radius: 8px; padding: 10px; flex-direction: column; gap: 8px; width: 220px; z-index: 110; max-height: 380px; overflow-y: auto; box-shadow: 0 0 20px #000; }
-        .drawer-item { display: flex; justify-content: space-between; align-items: center; background: #2a231e; border: 1px solid #444; padding: 8px; border-radius: 4px; }
-        .drawer-item span { font-size: 12px; color: var(--gold); flex-grow: 1; }
-        .del-btn { color: var(--accent); font-weight: bold; padding: 0 8px; font-size: 14px; }
-        .search-box { width: 100%; background: #000; color: var(--gold); border: 1px solid var(--gold); padding: 8px; border-radius: 4px; font-size: 12px; box-sizing: border-box; }
-
-        /* CHARACTER SHEET (CLEANED) */
-        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; padding: 15px; }
-        .scroll-paper { background: var(--sheet-bg); color: var(--ink); padding: 25px; border-radius: 8px; max-height: 90vh; overflow-y: auto; position: relative; }
-        .scroll-paper h2 { font-family: 'Cinzel'; border-bottom: 2px solid var(--ink); margin-top: 0; }
-        .close-sheet { position: absolute; top: 15px; right: 15px; font-size: 28px; border: none; background: none; }
+        /* VINTAGE DRAWERS */
+        .drawer { display: none; position: absolute; bottom: 135px; background: #2a231e; border: 2px solid var(--gold); border-radius: 8px; padding: 10px; flex-direction: column; gap: 6px; width: 220px; z-index: 110; max-height: 350px; overflow-y: auto; box-shadow: 0 0 30px #000; }
+        .drawer button { background: #3e3228; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 11px; text-align: left; font-family: 'Cinzel'; }
+        .search-box { width: 100%; background: #1a1614; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 12px; box-sizing: border-box; margin-bottom: 10px; font-family: 'Lato'; }
         
+        .spell-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; border: 1px solid #444; margin-bottom: 4px; }
+        .spell-name { color: var(--gold); font-family: 'Cinzel'; font-size: 11px; cursor: pointer; flex-grow: 1; }
+        .forget-btn { color: var(--accent); font-weight: bold; margin-left: 10px; width: 20px; text-align: center; }
+
+        /* THE SCROLL (CHARACTER SHEET) */
+        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; padding: 15px; }
+        .scroll-paper { 
+            background: var(--parchment) url('https://www.transparenttextures.com/patterns/parchment.png');
+            color: var(--ink); padding: 25px; border-radius: 4px; box-shadow: 0 0 50px #000;
+            max-height: 85vh; overflow-y: auto; position: relative; border: 1px solid #555;
+        }
+        .scroll-paper h2 { font-family: 'Cinzel'; border-bottom: 2px solid var(--ink); margin: 0 0 20px 0; }
+        .close-btn { position: absolute; top: 15px; right: 15px; font-size: 28px; background: none; border: none; color: var(--ink); }
+
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .box { display: flex; flex-direction: column; }
-        label { font-size: 9px; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+        label { font-size: 9px; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; color: #555; }
         select, input { background: transparent; border: none; border-bottom: 1px solid var(--ink); font-family: 'Cinzel'; font-size: 16px; color: var(--ink); outline: none; }
     </style>
 </head>
@@ -60,11 +70,14 @@
 
         <div style="position:relative;">
             <button class="icon-btn" onclick="toggleDrawer('skills-drawer')">
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             </button>
             <div id="skills-drawer" class="drawer">
-                <button onclick="skillRoll('Athletics','str')">Athletics (STR)</button><button onclick="skillRoll('Stealth','dex')">Stealth (DEX)</button><button onclick="skillRoll('Arcana','int')">Arcana (INT)</button><button onclick="skillRoll('Perception','wis')">Perception (WIS)</button><button onclick="skillRoll('Persuasion','cha')">Persuasion (CHA)</button>
-                <div style="border-top:1px solid #444; padding-top:5px; font-size:10px; color:#888;">Tap for full list in Sheets...</div>
+                <button onclick="skillRoll('Athletics','str')">Athletics</button>
+                <button onclick="skillRoll('Stealth','dex')">Stealth</button>
+                <button onclick="skillRoll('Arcana','int')">Arcana</button>
+                <button onclick="skillRoll('Insight','wis')">Insight</button>
+                <button onclick="skillRoll('Persuasion','cha')">Persuasion</button>
             </div>
         </div>
 
@@ -73,8 +86,8 @@
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2l2.4 7.2L22 11.6l-5.6 4.4L17.8 24 12 20.2 6.2 24 7.6 16l-5.6-4.4 7.6-2.4L12 2z"/></svg>
             </button>
             <div id="spell-drawer" class="drawer">
-                <input type="text" id="libSearch" class="search-box" placeholder="Search Library (e.g. Shield)..." onkeydown="if(event.key==='Enter') searchSpell()">
-                <div id="knownSpells" style="display:flex; flex-direction:column; gap:5px; margin-top:10px;"></div>
+                <input type="text" id="libSearch" class="search-box" placeholder="Search Great Library..." onkeydown="if(event.key==='Enter') searchSpell()">
+                <div id="knownSpells"></div>
             </div>
         </div>
 
@@ -90,23 +103,23 @@
 
 <div id="sheet">
     <div class="scroll-paper">
-        <button class="close-sheet" onclick="closeSheet()">✕</button>
-        <h2>Hero Chronicle</h2>
+        <button class="close-btn" onclick="closeSheet()">✕</button>
+        <h2>The Chronicle</h2>
         <div class="grid">
-            <div class="box"><label>Name</label><input type="text" id="name" value="Hero"></div>
+            <div class="box"><label>Identity</label><input type="text" id="name" value="Hero"></div>
             <div class="box"><label>Level</label><select id="level"></select></div>
             <div class="box"><label>Class</label><input type="text" id="class" value="Wizard"></div>
         </div>
         <div class="grid" id="attr-grid"></div>
-        <label>Gear & History</label>
-        <textarea id="inv" style="width:100%; height:120px; background:rgba(0,0,0,0.05); color:var(--ink); border:1px solid #ccc; border-radius:4px; margin-bottom:20px;"></textarea>
+        <label>Gear & Lore</label>
+        <textarea id="inv" style="width:100%; height:100px; background:rgba(0,0,0,0.05); color:var(--ink); border:1px solid rgba(0,0,0,0.1); border-radius:4px; margin-bottom:15px;"></textarea>
         <label>Master API Key</label>
-        <input type="password" id="key" style="width:100%;">
+        <input type="password" id="key" style="width:100%; font-family:sans-serif;">
     </div>
 </div>
 
 <script>
-    // INIT
+    // INITIALIZATION
     const lvlSel = document.getElementById('level');
     for(let i=1; i<=20; i++) lvlSel.options.add(new Option(i, i));
     const attrs = ['str','dex','con','int','wis','cha'];
@@ -117,11 +130,12 @@
         sel.value = 10;
     });
 
-    // SPELL API LOGIC
+    // SPELL SYSTEM
     let spellbook = JSON.parse(localStorage.getItem('spellbook')) || ['Fire Bolt', 'Shield'];
     
     async function searchSpell() {
-        const query = document.getElementById('libSearch').value.toLowerCase().replace(/ /g, '-');
+        const query = document.getElementById('libSearch').value.toLowerCase().trim().replace(/ /g, '-');
+        if(!query) return;
         try {
             const resp = await fetch(`https://api.open5e.com/spells/${query}/`);
             if(!resp.ok) throw new Error();
@@ -131,7 +145,7 @@
                 renderSpells();
                 document.getElementById('libSearch').value = "";
             }
-        } catch(e) { alert("Spell not found in Great Library."); }
+        } catch(e) { alert("This spell is not written in the Great Library."); }
     }
 
     function renderSpells() {
@@ -139,9 +153,9 @@
         container.innerHTML = "";
         spellbook.forEach((s, i) => {
             container.innerHTML += `
-                <div class="drawer-item">
-                    <span onclick="spellCast('${s}')">✨ ${s}</span>
-                    <div class="del-btn" onclick="forgetSpell(${i})">×</div>
+                <div class="spell-item">
+                    <div class="spell-name" onclick="spellCast('${s}')">✨ ${s}</div>
+                    <div class="forget-btn" onclick="forgetSpell(${i})">×</div>
                 </div>`;
         });
         localStorage.setItem('spellbook', JSON.stringify(spellbook));
@@ -157,6 +171,7 @@
         toggleDrawer('spell-drawer');
     }
 
+    // CORE UI
     function toggleDrawer(id) {
         const d = document.getElementById(id);
         const isOpen = d.style.display === 'flex';
@@ -190,9 +205,9 @@
     }
 
     const ids = ['key', 'name', 'level', 'class', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'inv'];
-    function saveData() { ids.forEach(id => localStorage.setItem('v8_'+id, document.getElementById(id).value)); }
+    function saveData() { ids.forEach(id => localStorage.setItem('v81_'+id, document.getElementById(id).value)); }
     ids.forEach(id => {
-        const val = localStorage.getItem('v8_'+id);
+        const val = localStorage.getItem('v81_'+id);
         if(val) document.getElementById(id).value = val;
     });
     renderSpells();
@@ -215,7 +230,7 @@
             history.push({ role: "user", parts: [{ text: text }] });
             history.push({ role: "model", parts: [{ text: resp }] });
             localStorage.setItem('campaign_log', JSON.stringify(history.slice(-50)));
-        } catch(e) { addMsg('ai', "❌ The Tome is locked."); }
+        } catch(e) { addMsg('ai', "❌ The spirits are silent. Check your API key."); }
     };
 </script>
 </body>
