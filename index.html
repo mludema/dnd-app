@@ -3,124 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dungeon App</title>
+    <title>Dungeon AI 5e</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* SAFE MODE STYLES for iPhone 8 */
-        body { 
-            background: #121212; 
-            color: #ffffff; 
-            font-family: -apple-system, sans-serif; 
-            margin: 0; 
-            padding-bottom: 140px; /* Space for fixed bottom bar */
-        }
+        /* BASE STYLES */
+        body { background: #121212; color: #eee; font-family: -apple-system, sans-serif; margin: 0; padding-bottom: 140px; }
         
-        /* Standard scrolling - No 100vh locking */
+        /* CHAT AREA */
         #chat { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-        
-        .msg { padding: 12px; border-radius: 18px; font-size: 16px; line-height: 1.4; max-width: 85%; }
-        .ai { background: #1e1e1e; align-self: flex-start; margin-right: auto; }
-        .user { background: #0a84ff; color: white; align-self: flex-end; margin-left: auto; }
-        .dice { background: #34c759; color: white; font-weight: bold; text-align: center; margin: 10px auto; width: fit-content; }
+        .msg { padding: 12px; border-radius: 12px; font-size: 16px; line-height: 1.4; max-width: 85%; }
+        .ai { background: #1e1e1e; align-self: flex-start; margin-right: auto; border-left: 3px solid #7c4dff; }
+        .user { background: #222; border: 1px solid #444; align-self: flex-end; margin-left: auto; }
+        .dice { background: #1b5e20; color: #a5d6a7; border: 1px solid #2e7d32; text-align: center; margin: 10px auto; width: fit-content; }
 
-        /* Fixed Bottom Bar */
-        #controls { 
-            position: fixed; 
-            bottom: 0; left: 0; right: 0; 
-            background: #000; 
-            padding: 10px; 
-            padding-bottom: 25px; /* Safety for home button area */
-            border-top: 1px solid #333;
-            z-index: 50;
-        }
-        .row { display: flex; gap: 10px; margin-bottom: 10px; }
-        
-        textarea { flex: 1; background: #222; color: #fff; border: 1px solid #555; border-radius: 10px; padding: 10px; font-size: 16px; -webkit-appearance: none; }
-        button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; font-size: 14px; color: white; }
-        .btn-dark { background: #333; }
-        .btn-blue { background: #0a84ff; }
+        /* BOTTOM CONTROLS */
+        #controls { position: fixed; bottom: 0; left: 0; right: 0; background: #000; padding: 10px; padding-bottom: 25px; border-top: 1px solid #333; z-index: 50; }
+        .row { display: flex; gap: 8px; margin-bottom: 8px; }
+        textarea { flex: 1; background: #222; color: #fff; border: 1px solid #555; border-radius: 8px; padding: 10px; font-size: 16px; -webkit-appearance: none; }
+        button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; font-size: 14px; color: white; }
+        .btn-sheet { background: #333; color: #ddd; }
+        .btn-roll { background: #d32f2f; color: white; }
+        .btn-send { background: #0a84ff; }
 
-        /* Sheet Overlay */
-        #sheet { 
-            display: none; /* Hidden by default */
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-            background: rgba(0,0,0,0.95); 
-            z-index: 100; 
-            padding: 20px; 
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch;
-        }
-        .sheet-card { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-top: 20px; }
-        .editable { color: #0a84ff; border-bottom: 1px dashed #0a84ff; padding: 5px; font-size: 18px; display: inline-block; min-width: 50px; }
+        /* FULL 5E SHEET OVERLAY */
+        #sheet { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #111; z-index: 100; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 15px; }
+        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .close-btn { background: none; color: #888; font-size: 24px; padding: 5px; flex: 0; }
+        
+        /* 5e GRIDS */
+        .section-title { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; border-bottom: 1px solid #333; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .stat-box { background: #222; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #333; }
+        .stat-label { font-size: 10px; color: #aaa; display: block; margin-bottom: 5px; }
+        .editable { color: #fff; font-size: 18px; font-weight: bold; border-bottom: 1px dashed #555; display: inline-block; min-width: 20px; }
+        
+        .api-box { background: #1a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
+        .api-input { font-size: 10px; color: #0a84ff; word-break: break-all; font-family: monospace; }
+        
+        .long-text { width: 100%; height: 80px; background: #222; border: 1px solid #333; color: #ddd; margin-top: 5px; border-radius: 5px; padding: 5px; }
     </style>
 </head>
 <body>
 
 <div id="chat">
-    <div class="msg ai">Safe Mode Loaded. Try the buttons below.</div>
+    <div class="msg ai">
+        <strong>Dungeon Master:</strong><br>
+        Character sheet updated to 5e Standard. Open SHEET to set your Stats, AC, and HP.
+    </div>
 </div>
 
 <div id="controls">
     <div class="row">
-        <button class="btn-dark" onclick="openSheet()">📜 SHEET</button>
-        <button class="btn-dark" onclick="rollDice()">🎲 ROLL</button>
+        <button class="btn-sheet" onclick="openSheet()">📜 SHEET</button>
+        <button class="btn-roll" onclick="rollD20()">🎲 ROLL D20</button>
     </div>
     <div class="row">
-        <textarea id="input" rows="1" placeholder="Action..."></textarea>
-        <button class="btn-blue" id="sendBtn">SEND</button>
+        <textarea id="input" rows="1" placeholder="What do you do?"></textarea>
+        <button class="btn-send" id="sendBtn">SEND</button>
     </div>
 </div>
 
 <div id="sheet">
-    <div class="sheet-card">
-        <button onclick="closeSheet()" style="float:right; font-size:20px; background:none; color:#999;">✕</button>
-        <h2>Character Sheet</h2>
-        <p style="color:#666; font-size:12px;">API KEY:</p>
-        <div id="key" class="editable" contenteditable="true" style="font-size:12px; word-break:break-all;">PASTE_KEY_HERE</div>
-        <br><br>
-        <p style="color:#666; font-size:12px;">NAME:</p>
-        <div id="name" class="editable" contenteditable="true">Kaelen</div>
-        <br><br>
-        <p style="color:#666; font-size:12px;">MODIFIER:</p>
-        <div id="mod" class="editable" contenteditable="true">5</div>
+    <div class="sheet-header">
+        <h2 style="margin:0">Character Sheet</h2>
+        <button class="close-btn" onclick="closeSheet()">✕</button>
     </div>
-</div>
+
+    <div class="api-box">
+        <span class="stat-label">GOOGLE API KEY (REQUIRED)</span>
+        <div id="key" class="editable api-input" contenteditable="true">PASTE_KEY_HERE</div>
+    </div>
+
+    <div class="section-title">Identity</div>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <div class="stat-box" style="flex:2; text-align:left;">
+            <span class="stat-label">NAME</span>
+            <div id="name" class="editable" contenteditable="true">Hero</div>
+        </div>
+        <div class="stat-box" style="flex:1">
+            <span class="stat-label">LEVEL</span>
+            <div id="level" class="editable" contenteditable="true">1</div>
+        </div>
+        <div class="stat-box" style="flex:1">
+            <span class="stat-label">CLASS</span>
+            <div id="class" class="editable" contenteditable="true">Fighter</div>
+        </div>
+    </div>
+
+    <div class="section-title">Combat</div>
+    <div class="stat-grid">
+        <div class="stat-box">
+            <span class="stat-label">AC</span>
+            <div id="ac" class="editable" contenteditable="true">10</div>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">HP (MAX)</span>
+            <div id="hp" class="editable" contenteditable="true">12</div>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">INITIATIVE</span>
+            <div id="init" class="editable" contenteditable="true">+0</div>
+        </div>
+    </div>
+
+    <div class="section-title">Attributes (Score)</div>
+    <div class="stat-grid">
+        <div class="stat-box"><span class="stat-label">STR</span><div id="str" class="editable" contenteditable="true">10</div></div>
+        <div class="stat-box"><span class="stat-label">DEX</span><div id="dex" class="editable" contenteditable="true">10</div></div>
+        <div class="stat-box"><span class="stat-label">CON</span><div id="con" class="editable" contenteditable="true">10</div></div>
+        <div class="stat-box"><span class="stat-label">INT</span><div id="int" class="editable" contenteditable="true">10</div></div>
+        <div class="stat-box"><span class="stat-label">WIS</span><div id="wis" class="editable" contenteditable="true">10</div></div>
+        <div class="stat-box"><span class="stat-label">CHA</span><div id="cha" class="editable" contenteditable="true">10</div></div>
+    </div>
+
+    <div class="section-title">Inventory & Spells</div>
+    <textarea id="inv" class="long-text" placeholder="Longsword, Potion of Healing, Fireball..."></textarea>
+    
+    <div style="height:50px;"></div> </div>
 
 <script>
-    // These functions are global so they work immediately
-    function openSheet() {
-        document.getElementById('sheet').style.display = 'block';
+    // --- UI FUNCTIONS ---
+    function openSheet() { document.getElementById('sheet').style.display = 'block'; }
+    function closeSheet() { 
+        document.getElementById('sheet').style.display = 'none'; 
+        saveData(); 
     }
-    function closeSheet() {
-        document.getElementById('sheet').style.display = 'none';
-        saveData();
-    }
-    function rollDice() {
-        const mod = parseInt(document.getElementById('mod').innerText) || 0;
-        const roll = Math.floor(Math.random() * 20) + 1;
-        addMessage('dice', `🎲 Rolled: ${roll + mod} (${roll} + ${mod})`);
-    }
+
+    // Auto-Save Mechanics
+    const fieldIds = ['key', 'name', 'level', 'class', 'ac', 'hp', 'init', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'inv'];
     
-    // Helper to add messages
-    function addMessage(role, text) {
+    function saveData() {
+        fieldIds.forEach(id => {
+            const el = document.getElementById(id);
+            const val = id === 'inv' ? el.value : el.innerText;
+            localStorage.setItem('dnd5e_' + id, val);
+        });
+    }
+
+    // Load Data on Startup
+    fieldIds.forEach(id => {
+        const saved = localStorage.getItem('dnd5e_' + id);
+        if(saved) {
+            const el = document.getElementById(id);
+            if(id === 'inv') el.value = saved;
+            else el.innerText = saved;
+        }
+    });
+
+    // --- DICE ROLLER ---
+    function rollD20() {
+        // Automatically grabs the relevant modifier? Simple D20 for now to keep it safe
+        const r = Math.floor(Math.random() * 20) + 1;
+        addMsg('dice', `🎲 D20 Roll: ${r}`);
+    }
+
+    function addMsg(role, text) {
         const div = document.createElement('div');
         div.className = 'msg ' + role;
-        div.innerText = text;
+        div.innerHTML = text; // innerHTML allows bolding
         document.getElementById('chat').appendChild(div);
         window.scrollTo(0, document.body.scrollHeight);
     }
-
-    // Auto-Save/Load
-    function saveData() {
-        localStorage.setItem('dnd_key', document.getElementById('key').innerText);
-        localStorage.setItem('dnd_name', document.getElementById('name').innerText);
-        localStorage.setItem('dnd_mod', document.getElementById('mod').innerText);
-    }
-    
-    // Load on startup
-    if(localStorage.getItem('dnd_key')) document.getElementById('key').innerText = localStorage.getItem('dnd_key');
-    if(localStorage.getItem('dnd_name')) document.getElementById('name').innerText = localStorage.getItem('dnd_name');
-    if(localStorage.getItem('dnd_mod')) document.getElementById('mod').innerText = localStorage.getItem('dnd_mod');
 </script>
 
 <script type="module">
@@ -130,24 +173,31 @@
         const text = document.getElementById('input').value;
         if(!text) return;
         
-        addMessage('user', text);
+        addMsg('user', text);
         document.getElementById('input').value = "";
         
         const key = document.getElementById('key').innerText;
         if(key.length < 10 || key.includes("PASTE")) {
-            addMessage('ai', "⚠️ Please set your API Key in the Sheet first.");
+            addMsg('ai', "⚠️ Please setup your API Key in the Sheet.");
             return;
         }
 
         try {
+            // Build the Character Context string
+            const name = document.getElementById('name').innerText;
+            const cls = document.getElementById('class').innerText;
+            const lvl = document.getElementById('level').innerText;
+            const hp = document.getElementById('hp').innerText;
+            const context = `(Player: ${name}, Level ${lvl} ${cls}, HP: ${hp}). `;
+
             const genAI = new GoogleGenerativeAI(key);
             const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
             const chat = model.startChat({ history: [] });
             
-            const result = await chat.sendMessage(`[Character: ${document.getElementById('name').innerText}] ${text}`);
-            addMessage('ai', result.response.text());
+            const result = await chat.sendMessage(context + text);
+            addMsg('ai', result.response.text());
         } catch(e) {
-            addMessage('ai', "❌ Connection Error. Check your API Key.");
+            addMsg('ai', "❌ AI Error. Check API Key.");
         }
     };
 </script>
