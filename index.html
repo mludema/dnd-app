@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dungeon AI: Master Edition</title>
+    <title>Dungeon Master: Icons</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #1a1614; --panel: #2a231e; --text: #e0d0b8; --gold: #c5a059; --accent: #8b3a3a; }
-        body { background: var(--bg); color: var(--text); font-family: 'Lato', sans-serif; margin: 0; padding-bottom: 120px; overflow-x: hidden; }
+        :root { --bg: #1a1614; --panel: #2a231e; --text: #e0d0b8; --gold: #c5a059; --accent: #8b3a3a; --magic: #4a69bd; }
+        body { background: var(--bg); color: var(--text); font-family: 'Lato', sans-serif; margin: 0; padding-bottom: 120px; }
         h2, button, .cinzel { font-family: 'Cinzel', serif; }
 
         /* CHAT */
@@ -15,82 +15,79 @@
         .msg { padding: 12px; border: 1px solid #444; border-radius: 4px; line-height: 1.5; max-width: 85%; }
         .ai { background: var(--panel); border-left: 4px solid var(--gold); align-self: flex-start; }
         .user { background: #2d3436; border-right: 4px solid var(--accent); align-self: flex-end; }
-        .dice-msg { background: #000; color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 10px auto; padding: 5px 15px; width: fit-content; font-size: 14px; }
+        .dice-msg { background: #000; color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 10px auto; padding: 5px 15px; width: fit-content; font-size: 14px; border-radius: 4px; }
 
         /* FIXED BOTTOM CONTROLS */
-        #controls { position: fixed; bottom: 0; left: 0; right: 0; background: #0b0908; border-top: 2px solid var(--gold); padding: 10px 10px 30px 10px; z-index: 100; }
-        .row { display: flex; gap: 10px; align-items: center; }
-        textarea { flex: 1; background: #1a1614; color: var(--text); border: 1px solid #444; border-radius: 4px; padding: 12px; font-size: 16px; -webkit-appearance: none; }
+        #controls { position: fixed; bottom: 0; left: 0; right: 0; background: #0b0908; border-top: 2px solid var(--gold); padding: 10px 10px 30px 10px; z-index: 100; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
+        .row { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+        textarea { flex: 1; background: #1a1614; color: var(--text); border: 1px solid #444; border-radius: 4px; padding: 12px; font-size: 16px; -webkit-appearance: none; height: 45px; box-sizing: border-box; }
         
-        /* ACTION BUTTONS */
-        .round-btn { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); background: var(--panel); color: var(--gold); font-size: 20px; font-family: 'Cinzel'; display: flex; align-items: center; justify-content: center; position: relative; }
-        .btn-act { background: var(--accent); color: white; border: 1px solid #a34646; padding: 12px 18px; border-radius: 4px; }
+        /* ICON BUTTONS */
+        .round-btn { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); background: var(--panel); color: var(--gold); font-size: 20px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; cursor: pointer; padding: 0; line-height: 1; }
+        .btn-act { background: var(--accent); color: white; border: 1px solid #a34646; height: 45px; padding: 0 15px; border-radius: 4px; font-family: 'Cinzel'; font-size: 22px; display: flex; align-items: center; justify-content: center; }
 
-        /* TWIRL UP MENUS */
-        .drawer { display: none; position: absolute; bottom: 70px; background: var(--panel); border: 2px solid var(--gold); border-radius: 8px; padding: 10px; flex-direction: column; gap: 8px; box-shadow: 0 0 20px #000; }
-        .drawer button { background: #3e3228; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 12px; white-space: nowrap; text-align: left; }
+        /* DRAWERS */
+        .drawer { display: none; position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 2px solid var(--gold); border-radius: 8px; padding: 8px; flex-direction: column; gap: 6px; box-shadow: 0 0 20px #000; z-index: 110; width: 140px; }
+        .drawer button { background: #3e3228; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 11px; text-align: left; font-family: 'Lato', sans-serif; }
+        .drawer.magic-style { border-color: var(--magic); }
+        .drawer.magic-style button { color: #a29bfe; border-color: var(--magic); }
 
-        /* SHEET OVERLAY */
+        /* SHEET */
         #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; padding: 15px; overflow-y: auto; }
         .sheet-card { background: var(--panel); border: 2px solid var(--gold); padding: 20px; }
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
         .stat-box { background: #1a1614; border: 1px solid #444; padding: 5px; text-align: center; }
-        .stat-label { font-size: 9px; color: #888; display: block; }
-        .editable { font-family: 'Cinzel'; border-bottom: 1px dashed #555; outline: none; }
+        .stat-label { font-size: 8px; color: #888; display: block; text-transform: uppercase; }
+        .editable { font-family: 'Cinzel'; border-bottom: 1px dashed #555; outline: none; color: #fff; }
     </style>
 </head>
 <body>
 
 <div id="chat">
-    <div class="msg ai"><strong>Dungeon Master:</strong><br>The Tome is ready. Open your STATS to bind your key.</div>
+    <div class="msg ai"><strong>Dungeon Master:</strong><br>The icons of power have been etched into your screen. Enter your Key in the 📜 Scroll.</div>
 </div>
 
 <div id="controls">
     <div class="row">
         <div style="position:relative;">
-            <button class="round-btn" onclick="toggleDrawer('dice-drawer')">20</button>
-            <div id="dice-drawer" class="drawer">
-                <button onclick="roll(4)">d4</button>
-                <button onclick="roll(6)">d6</button>
-                <button onclick="roll(8)">d8</button>
-                <button onclick="roll(10)">d10</button>
-                <button onclick="roll(12)">d12</button>
-                <button onclick="roll(20)">d20</button>
+            <button class="round-btn" onclick="toggleDrawer('dice-drawer')">🎲</button>
+            <div id="dice-drawer" class="drawer"><button onclick="roll(4)">d4</button><button onclick="roll(6)">d6</button><button onclick="roll(8)">d8</button><button onclick="roll(10)">d10</button><button onclick="roll(12)">d12</button><button onclick="roll(20)">d20</button></div>
+        </div>
+
+        <div style="position:relative;">
+            <button class="round-btn" onclick="toggleDrawer('skills-drawer')">📜</button>
+            <div id="skills-drawer" class="drawer" style="max-height: 250px; overflow-y: auto;">
+                <button onclick="skillRoll('Athletics','str')">Athletics</button><button onclick="skillRoll('Acrobatics','dex')">Acrobatics</button><button onclick="skillRoll('Stealth','dex')">Stealth</button><button onclick="skillRoll('Arcana','int')">Arcana</button><button onclick="skillRoll('Perception','wis')">Perception</button><button onclick="skillRoll('Insight','wis')">Insight</button><button onclick="skillRoll('Persuasion','cha')">Persuasion</button>
             </div>
         </div>
 
         <div style="position:relative;">
-            <button class="round-btn" style="font-size:10px;" onclick="toggleDrawer('skills-drawer')">SKILLS</button>
-            <div id="skills-drawer" class="drawer" style="max-height: 300px; overflow-y: auto; width: 140px;">
-                <button onclick="skillRoll('Athletics','str')">Athletics (STR)</button>
-                <button onclick="skillRoll('Acrobatics','dex')">Acrobatics (DEX)</button>
-                <button onclick="skillRoll('Stealth','dex')">Stealth (DEX)</button>
-                <button onclick="skillRoll('Arcana','int')">Arcana (INT)</button>
-                <button onclick="skillRoll('History','int')">History (INT)</button>
-                <button onclick="skillRoll('Insight','wis')">Insight (WIS)</button>
-                <button onclick="skillRoll('Perception','wis')">Perception (WIS)</button>
-                <button onclick="skillRoll('Survival','wis')">Survival (WIS)</button>
-                <button onclick="skillRoll('Deception','cha')">Deception (CHA)</button>
-                <button onclick="skillRoll('Persuasion','cha')">Persuasion (CHA)</button>
+            <button class="round-btn" style="border-color:var(--magic); color:var(--magic);" onclick="toggleDrawer('spell-drawer')">✨</button>
+            <div id="spell-drawer" class="drawer magic-style" style="max-height: 250px; overflow-y: auto;">
+                <button onclick="spellCast('Fire Bolt','int','1d10')">Fire Bolt</button>
+                <button onclick="spellCast('Cure Wounds','wis','1d8')">Cure Wounds</button>
+                <button onclick="spellCast('Magic Missile','int','3d4+3')">Magic Missile</button>
+                <button onclick="spellCast('Eldritch Blast','cha','1d10')">Eldritch Blast</button>
             </div>
         </div>
 
-        <textarea id="input" rows="1" placeholder="Describe..."></textarea>
-        <button class="btn-act" id="sendBtn">ACT</button>
+        <textarea id="input" rows="1" placeholder="Action..."></textarea>
+        
+        <button class="btn-act" id="sendBtn">⚔️</button>
     </div>
-    <button onclick="openSheet()" style="width:100%; background:none; border:none; color:var(--gold); font-size:10px; margin-top:10px;">📜 OPEN CHARACTER SCROLL</button>
+    <button onclick="openSheet()" style="width:100%; background:none; border:none; color:var(--gold); font-size:10px; margin-top:10px; font-family:'Cinzel';">📜 OPEN CHARACTER SCROLL</button>
 </div>
 
 <div id="sheet">
     <div class="sheet-card">
         <h2 style="color:var(--gold); margin-top:0;">Character Scroll <button onclick="closeSheet()" style="float:right; background:none; border:none; color:#777;">✕</button></h2>
-        <div style="background:#000; padding:10px; margin-bottom:10px;">
+        <div style="background:#000; padding:10px; margin-bottom:10px; border:1px solid #333;">
             <span class="stat-label">API KEY</span>
             <div id="key" class="editable" contenteditable="true" style="font-size:10px; word-break:break-all;">PASTE_KEY_HERE</div>
         </div>
         <div class="stat-grid">
             <div class="stat-box"><span class="stat-label">NAME</span><div id="name" class="editable" contenteditable="true">Hero</div></div>
-            <div class="stat-box"><span class="stat-label">CLASS</span><div id="class" class="editable" contenteditable="true">Fighter</div></div>
+            <div class="stat-box"><span class="stat-label">CLASS</span><div id="class" class="editable" contenteditable="true">Mage</div></div>
             <div class="stat-box"><span class="stat-label">LVL</span><div id="level" class="editable" contenteditable="true">1</div></div>
         </div>
         <div class="stat-grid">
@@ -101,13 +98,13 @@
             <div class="stat-box"><span class="stat-label">WIS</span><div id="wis" class="editable" contenteditable="true">10</div></div>
             <div class="stat-box"><span class="stat-label">CHA</span><div id="cha" class="editable" contenteditable="true">10</div></div>
         </div>
-        <span class="stat-label">NOTES / INVENTORY</span>
-        <textarea id="inv" style="width:100%; height:80px; background:#111; color:#ccc; border:1px solid #444;"></textarea>
+        <span class="stat-label">INVENTORY / SPELLS</span>
+        <textarea id="inv" style="width:100%; height:100px; background:#111; color:#ccc; border:1px solid #444;"></textarea>
     </div>
 </div>
 
 <script>
-    // --- UI ENGINE ---
+    // Functions remain the same but icons are now in the UI
     function toggleDrawer(id) {
         const d = document.getElementById(id);
         const isOpen = d.style.display === 'flex';
@@ -118,21 +115,31 @@
     function openSheet() { document.getElementById('sheet').style.display = 'block'; }
     function closeSheet() { document.getElementById('sheet').style.display = 'none'; saveData(); }
 
-    // --- DICE ENGINE ---
     function roll(sides) {
         const r = Math.floor(Math.random() * sides) + 1;
         addMsg('dice-msg', `🎲 d${sides} Result: <strong>${r}</strong>`);
         toggleDrawer('dice-drawer');
     }
 
-    function skillRoll(skillName, attrId) {
+    function getMod(attrId) {
         const score = parseInt(document.getElementById(attrId).innerText) || 10;
-        const mod = Math.floor((score - 10) / 2);
+        return Math.floor((score - 10) / 2);
+    }
+
+    function skillRoll(name, attr) {
         const d20 = Math.floor(Math.random() * 20) + 1;
-        const total = d20 + mod;
-        addMsg('dice-msg', `📜 ${skillName}: <strong>${total}</strong> (${d20} + ${mod})`);
-        document.getElementById('input').value = `I rolled a ${total} for ${skillName}.`;
+        const total = d20 + getMod(attr);
+        addMsg('dice-msg', `📜 ${name}: <strong>${total}</strong>`);
+        document.getElementById('input').value = `I rolled a ${total} for ${name}.`;
         toggleDrawer('skills-drawer');
+    }
+
+    function spellCast(name, attr, dmg) {
+        const d20 = Math.floor(Math.random() * 20) + 1;
+        const attack = d20 + getMod(attr);
+        addMsg('dice-msg', `✨ ${name}: Hit <strong>${attack}</strong> | Power: ${dmg}`);
+        document.getElementById('input').value = `I cast ${name}. Attack roll: ${attack}.`;
+        toggleDrawer('spell-drawer');
     }
 
     function addMsg(cls, html) {
@@ -143,14 +150,13 @@
         window.scrollTo(0, document.body.scrollHeight);
     }
 
-    // --- STORAGE ---
     const ids = ['key', 'name', 'level', 'class', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'inv'];
     function saveData() { ids.forEach(id => {
         const el = document.getElementById(id);
-        localStorage.setItem('v3_'+id, (id==='inv'?el.value:el.innerText));
+        localStorage.setItem('v41_'+id, (id==='inv'?el.value:el.innerText));
     });}
     ids.forEach(id => {
-        const val = localStorage.getItem('v3_'+id);
+        const val = localStorage.getItem('v41_'+id);
         if(val) {
             const el = document.getElementById(id);
             if(id==='inv') el.value = val; else el.innerText = val;
@@ -174,18 +180,16 @@
             const genAI = new GoogleGenerativeAI(key);
             const model = genAI.getGenerativeModel({ 
                 model: "gemini-1.5-flash",
-                systemInstruction: "You are a professional DM. Use the player's provided history for continuity. Keep responses immersive."
+                systemInstruction: "You are an expert DM. Maintain the medieval tone. Respect the character stats and history."
             });
-
-            const chat = model.startChat({ history: history.slice(-12) });
+            const chat = model.startChat({ history: history.slice(-14) });
             const result = await chat.sendMessage(stats + text);
             const resp = result.response.text();
             addMsg('ai', resp);
-
             history.push({ role: "user", parts: [{ text: text }] });
             history.push({ role: "model", parts: [{ text: resp }] });
             localStorage.setItem('campaign_log', JSON.stringify(history.slice(-50)));
-        } catch(e) { addMsg('ai', "❌ Spirit Error: Check your API Key."); }
+        } catch(e) { addMsg('ai', "❌ Spirit Error: Check Key."); }
     };
 </script>
 
