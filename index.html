@@ -3,192 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dungeon AI: Medieval</title>
-    <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-    
+    <title>Dungeon AI: Master Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato&display=swap" rel="stylesheet">
     <style>
-        /* MEDIEVAL THEME VARIABLES */
-        :root {
-            --bg: #1a1614; /* Dark Wood */
-            --panel: #2a231e; /* Lighter Wood */
-            --text: #e0d0b8; /* Old Paper */
-            --gold: #c5a059; /* Dull Gold */
-            --accent: #8b3a3a; /* Wax Seal Red */
-            --dice-btn: #3e3228;
-        }
+        :root { --bg: #1a1614; --panel: #2a231e; --text: #e0d0b8; --gold: #c5a059; --accent: #8b3a3a; }
+        body { background: var(--bg); color: var(--text); font-family: 'Lato', sans-serif; margin: 0; padding-bottom: 120px; overflow-x: hidden; }
+        h2, button, .cinzel { font-family: 'Cinzel', serif; }
 
-        /* BASE STYLES */
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: 'Lato', sans-serif; 
-            margin: 0; 
-            padding-bottom: 180px; /* Extra space for new Dice Bar */
-        }
-        
-        h1, h2, h3, button, .cinzel { font-family: 'Cinzel', serif; letter-spacing: 1px; }
-
-        /* CHAT AREA */
+        /* CHAT */
         #chat { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 15px; border-radius: 4px; font-size: 16px; line-height: 1.5; max-width: 88%; border: 1px solid #444; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        
-        /* DM (AI) Style */
-        .ai { 
-            background: var(--panel); 
-            border: 1px solid var(--gold); 
-            border-left: 4px solid var(--gold); 
-            align-self: flex-start; margin-right: auto; 
-        }
-        
-        /* Player Style */
-        .user { 
-            background: #2d3436; 
-            border: 1px solid #555; 
-            border-right: 4px solid var(--accent); 
-            align-self: flex-end; margin-left: auto; 
-        }
-        
-        /* Dice Result */
-        .dice-msg { 
-            background: #1e272e; 
-            color: var(--gold); 
-            border: 1px double var(--gold); 
-            text-align: center; 
-            margin: 10px auto; 
-            padding: 8px 20px;
-            width: fit-content; 
-            font-family: 'Cinzel', serif;
-        }
+        .msg { padding: 12px; border: 1px solid #444; border-radius: 4px; line-height: 1.5; max-width: 85%; }
+        .ai { background: var(--panel); border-left: 4px solid var(--gold); align-self: flex-start; }
+        .user { background: #2d3436; border-right: 4px solid var(--accent); align-self: flex-end; }
+        .dice-msg { background: #000; color: var(--gold); border: 1px double var(--gold); text-align: center; margin: 10px auto; padding: 5px 15px; width: fit-content; font-size: 14px; }
 
-        /* BOTTOM CONTROLS CONTAINER */
-        #controls { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: #0f0c0b; 
-            border-top: 2px solid var(--gold); 
-            padding: 10px; 
-            padding-bottom: 25px; 
-            z-index: 50;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
-        }
-
-        /* DICE BAR */
-        .dice-bar { 
-            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 5px; 
-            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
-        }
-        .dice-btn { 
-            min-width: 50px; padding: 10px 0; 
-            background: var(--dice-btn); color: var(--gold); 
-            border: 1px solid var(--gold); border-radius: 4px; 
-            font-size: 12px; font-weight: bold;
-        }
-        .dice-btn:active { background: var(--gold); color: #000; }
-
-        /* INPUT ROW */
-        .row { display: flex; gap: 8px; }
-        textarea { 
-            flex: 1; background: #1a1614; color: var(--text); 
-            border: 1px solid #555; border-radius: 4px; 
-            padding: 12px; font-size: 16px; font-family: 'Lato', sans-serif;
-            -webkit-appearance: none; 
-        }
-        .btn-main { 
-            background: var(--accent); color: white; border: 1px solid #a34646; 
-            padding: 0 20px; border-radius: 4px; font-size: 14px; 
-        }
-
-        /* MEDIEVAL SHEET OVERLAY */
-        #sheet { 
-            display: none; position: fixed; inset: 0; 
-            background: rgba(0,0,0,0.95); z-index: 100; 
-            padding: 15px; overflow-y: auto; -webkit-overflow-scrolling: touch;
-        }
-        .sheet-card { 
-            background: var(--panel); border: 2px solid var(--gold); 
-            padding: 20px; border-radius: 2px; margin-bottom: 50px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-        }
-        .sheet-header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 2px solid var(--gold); margin-bottom: 20px; padding-bottom: 10px; 
-        }
+        /* FIXED BOTTOM CONTROLS */
+        #controls { position: fixed; bottom: 0; left: 0; right: 0; background: #0b0908; border-top: 2px solid var(--gold); padding: 10px 10px 30px 10px; z-index: 100; }
+        .row { display: flex; gap: 10px; align-items: center; }
+        textarea { flex: 1; background: #1a1614; color: var(--text); border: 1px solid #444; border-radius: 4px; padding: 12px; font-size: 16px; -webkit-appearance: none; }
         
-        /* Form Elements */
-        .section-title { color: var(--gold); font-size: 14px; margin-top: 25px; border-bottom: 1px solid #444; font-family: 'Cinzel', serif; }
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-        .stat-box { background: #1a1614; border: 1px solid #444; padding: 8px; text-align: center; }
-        .stat-label { font-size: 9px; color: #888; display: block; margin-bottom: 4px; text-transform: uppercase; }
-        .editable { color: var(--text); font-size: 18px; border-bottom: 1px dashed #555; display: inline-block; min-width: 20px; font-family: 'Cinzel', serif; }
-        
-        .long-text { 
-            width: 100%; height: 100px; background: #1a1614; color: #aaa; 
-            border: 1px solid #444; margin-top: 10px; padding: 10px; font-family: 'Lato', sans-serif; 
-        }
+        /* ACTION BUTTONS */
+        .round-btn { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--gold); background: var(--panel); color: var(--gold); font-size: 20px; font-family: 'Cinzel'; display: flex; align-items: center; justify-content: center; position: relative; }
+        .btn-act { background: var(--accent); color: white; border: 1px solid #a34646; padding: 12px 18px; border-radius: 4px; }
+
+        /* TWIRL UP MENUS */
+        .drawer { display: none; position: absolute; bottom: 70px; background: var(--panel); border: 2px solid var(--gold); border-radius: 8px; padding: 10px; flex-direction: column; gap: 8px; box-shadow: 0 0 20px #000; }
+        .drawer button { background: #3e3228; color: var(--gold); border: 1px solid var(--gold); padding: 10px; border-radius: 4px; font-size: 12px; white-space: nowrap; text-align: left; }
+
+        /* SHEET OVERLAY */
+        #sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; padding: 15px; overflow-y: auto; }
+        .sheet-card { background: var(--panel); border: 2px solid var(--gold); padding: 20px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+        .stat-box { background: #1a1614; border: 1px solid #444; padding: 5px; text-align: center; }
+        .stat-label { font-size: 9px; color: #888; display: block; }
+        .editable { font-family: 'Cinzel'; border-bottom: 1px dashed #555; outline: none; }
     </style>
 </head>
 <body>
 
 <div id="chat">
-    <div class="msg ai">
-        <strong>The Dungeon Master:</strong><br>
-        Welcome, traveler. The archives have been updated. Set your stats in the 📜 Scroll.
-    </div>
+    <div class="msg ai"><strong>Dungeon Master:</strong><br>The Tome is ready. Open your STATS to bind your key.</div>
 </div>
 
 <div id="controls">
-    <div class="dice-bar">
-        <button class="dice-btn" onclick="openSheet()">📜 STATS</button>
-        <button class="dice-btn" onclick="roll(4)">d4</button>
-        <button class="dice-btn" onclick="roll(6)">d6</button>
-        <button class="dice-btn" onclick="roll(8)">d8</button>
-        <button class="dice-btn" onclick="roll(10)">d10</button>
-        <button class="dice-btn" onclick="roll(12)">d12</button>
-        <button class="dice-btn" onclick="roll(20)" style="border-color: var(--accent);">d20</button>
-    </div>
-
     <div class="row">
-        <textarea id="input" rows="1" placeholder="Describe your action..."></textarea>
-        <button class="btn-main" id="sendBtn">ACT</button>
+        <div style="position:relative;">
+            <button class="round-btn" onclick="toggleDrawer('dice-drawer')">20</button>
+            <div id="dice-drawer" class="drawer">
+                <button onclick="roll(4)">d4</button>
+                <button onclick="roll(6)">d6</button>
+                <button onclick="roll(8)">d8</button>
+                <button onclick="roll(10)">d10</button>
+                <button onclick="roll(12)">d12</button>
+                <button onclick="roll(20)">d20</button>
+            </div>
+        </div>
+
+        <div style="position:relative;">
+            <button class="round-btn" style="font-size:10px;" onclick="toggleDrawer('skills-drawer')">SKILLS</button>
+            <div id="skills-drawer" class="drawer" style="max-height: 300px; overflow-y: auto; width: 140px;">
+                <button onclick="skillRoll('Athletics','str')">Athletics (STR)</button>
+                <button onclick="skillRoll('Acrobatics','dex')">Acrobatics (DEX)</button>
+                <button onclick="skillRoll('Stealth','dex')">Stealth (DEX)</button>
+                <button onclick="skillRoll('Arcana','int')">Arcana (INT)</button>
+                <button onclick="skillRoll('History','int')">History (INT)</button>
+                <button onclick="skillRoll('Insight','wis')">Insight (WIS)</button>
+                <button onclick="skillRoll('Perception','wis')">Perception (WIS)</button>
+                <button onclick="skillRoll('Survival','wis')">Survival (WIS)</button>
+                <button onclick="skillRoll('Deception','cha')">Deception (CHA)</button>
+                <button onclick="skillRoll('Persuasion','cha')">Persuasion (CHA)</button>
+            </div>
+        </div>
+
+        <textarea id="input" rows="1" placeholder="Describe..."></textarea>
+        <button class="btn-act" id="sendBtn">ACT</button>
     </div>
+    <button onclick="openSheet()" style="width:100%; background:none; border:none; color:var(--gold); font-size:10px; margin-top:10px;">📜 OPEN CHARACTER SCROLL</button>
 </div>
 
 <div id="sheet">
     <div class="sheet-card">
-        <div class="sheet-header">
-            <h2 style="margin:0; color:var(--gold);">Character Scroll</h2>
-            <button onclick="closeSheet()" style="background:none; border:none; color:var(--text); font-size:24px;">✕</button>
+        <h2 style="color:var(--gold); margin-top:0;">Character Scroll <button onclick="closeSheet()" style="float:right; background:none; border:none; color:#777;">✕</button></h2>
+        <div style="background:#000; padding:10px; margin-bottom:10px;">
+            <span class="stat-label">API KEY</span>
+            <div id="key" class="editable" contenteditable="true" style="font-size:10px; word-break:break-all;">PASTE_KEY_HERE</div>
         </div>
-
-        <div style="background:#000; padding:10px; border:1px solid #333; margin-bottom:20px;">
-            <span class="stat-label">SECRET KEY (API)</span>
-            <div id="key" class="editable" contenteditable="true" style="font-size:10px; color:#555; font-family:monospace; word-break:break-all;">PASTE_KEY_HERE</div>
-        </div>
-
-        <div class="section-title">Identity</div>
-        <div style="display:flex; gap:10px; margin-top:10px;">
-            <div class="stat-box" style="flex:2; text-align:left;">
-                <span class="stat-label">NAME</span>
-                <div id="name" class="editable" contenteditable="true">Hero</div>
-            </div>
-            <div class="stat-box" style="flex:1">
-                <span class="stat-label">LEVEL</span>
-                <div id="level" class="editable" contenteditable="true">1</div>
-            </div>
-             <div class="stat-box" style="flex:1">
-                <span class="stat-label">CLASS</span>
-                <div id="class" class="editable" contenteditable="true">Fighter</div>
-            </div>
-        </div>
-
-        <div class="section-title">Combat Stats</div>
         <div class="stat-grid">
-            <div class="stat-box"><span class="stat-label">AC</span><div id="ac" class="editable" contenteditable="true">10</div></div>
-            <div class="stat-box"><span class="stat-label">HP</span><div id="hp" class="editable" contenteditable="true">12</div></div>
-            <div class="stat-box"><span class="stat-label">INIT</span><div id="init" class="editable" contenteditable="true">+0</div></div>
+            <div class="stat-box"><span class="stat-label">NAME</span><div id="name" class="editable" contenteditable="true">Hero</div></div>
+            <div class="stat-box"><span class="stat-label">CLASS</span><div id="class" class="editable" contenteditable="true">Fighter</div></div>
+            <div class="stat-box"><span class="stat-label">LVL</span><div id="level" class="editable" contenteditable="true">1</div></div>
         </div>
-
-        <div class="section-title">Attributes</div>
         <div class="stat-grid">
             <div class="stat-box"><span class="stat-label">STR</span><div id="str" class="editable" contenteditable="true">10</div></div>
             <div class="stat-box"><span class="stat-label">DEX</span><div id="dex" class="editable" contenteditable="true">10</div></div>
@@ -197,97 +101,91 @@
             <div class="stat-box"><span class="stat-label">WIS</span><div id="wis" class="editable" contenteditable="true">10</div></div>
             <div class="stat-box"><span class="stat-label">CHA</span><div id="cha" class="editable" contenteditable="true">10</div></div>
         </div>
-
-        <div class="section-title">Inventory & Notes</div>
-        <textarea id="inv" class="long-text" placeholder="Items, spells, backstory..."></textarea>
+        <span class="stat-label">NOTES / INVENTORY</span>
+        <textarea id="inv" style="width:100%; height:80px; background:#111; color:#ccc; border:1px solid #444;"></textarea>
     </div>
 </div>
 
 <script>
-    // --- UI HELPERS ---
-    function openSheet() { document.getElementById('sheet').style.display = 'block'; }
-    function closeSheet() { 
-        document.getElementById('sheet').style.display = 'none'; 
-        saveData(); 
+    // --- UI ENGINE ---
+    function toggleDrawer(id) {
+        const d = document.getElementById(id);
+        const isOpen = d.style.display === 'flex';
+        document.querySelectorAll('.drawer').forEach(el => el.style.display = 'none');
+        d.style.display = isOpen ? 'none' : 'flex';
     }
 
-    // --- DICE ROLLER ---
+    function openSheet() { document.getElementById('sheet').style.display = 'block'; }
+    function closeSheet() { document.getElementById('sheet').style.display = 'none'; saveData(); }
+
+    // --- DICE ENGINE ---
     function roll(sides) {
         const r = Math.floor(Math.random() * sides) + 1;
-        
-        // If it's a d20, check for modifier
-        let msg = `🎲 d${sides} Roll: <strong>${r}</strong>`;
-        if (sides === 20) {
-            // Try to find a relevant modifier? For now, just show raw + add hint
-            // In a future update, we could ask "Is this a STR check?"
-            // For now, simple is best.
-        }
-        
-        addMsg('dice-msg', msg);
+        addMsg('dice-msg', `🎲 d${sides} Result: <strong>${r}</strong>`);
+        toggleDrawer('dice-drawer');
+    }
+
+    function skillRoll(skillName, attrId) {
+        const score = parseInt(document.getElementById(attrId).innerText) || 10;
+        const mod = Math.floor((score - 10) / 2);
+        const d20 = Math.floor(Math.random() * 20) + 1;
+        const total = d20 + mod;
+        addMsg('dice-msg', `📜 ${skillName}: <strong>${total}</strong> (${d20} + ${mod})`);
+        document.getElementById('input').value = `I rolled a ${total} for ${skillName}.`;
+        toggleDrawer('skills-drawer');
     }
 
     function addMsg(cls, html) {
         const div = document.createElement('div');
-        div.className = cls;
+        div.className = 'msg ' + cls;
         div.innerHTML = html;
         document.getElementById('chat').appendChild(div);
         window.scrollTo(0, document.body.scrollHeight);
     }
 
-    // --- DATA SAVING ---
-    const ids = ['key', 'name', 'level', 'class', 'ac', 'hp', 'init', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'inv'];
-    
-    function saveData() {
-        ids.forEach(id => {
-            const el = document.getElementById(id);
-            localStorage.setItem('med_' + id, (id==='inv'?el.value:el.innerText));
-        });
-    }
-    
-    // Load Data
+    // --- STORAGE ---
+    const ids = ['key', 'name', 'level', 'class', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'inv'];
+    function saveData() { ids.forEach(id => {
+        const el = document.getElementById(id);
+        localStorage.setItem('v3_'+id, (id==='inv'?el.value:el.innerText));
+    });}
     ids.forEach(id => {
-        const val = localStorage.getItem('med_' + id);
+        const val = localStorage.getItem('v3_'+id);
         if(val) {
             const el = document.getElementById(id);
             if(id==='inv') el.value = val; else el.innerText = val;
         }
     });
-
 </script>
 
 <script type="module">
     import { GoogleGenerativeAI } from "https://cdn.jsdelivr.net/npm/@google/generative-ai@0.14.0/dist/index.js";
+    let history = JSON.parse(localStorage.getItem('campaign_log')) || [];
 
     document.getElementById('sendBtn').onclick = async () => {
         const text = document.getElementById('input').value;
         if(!text) return;
-        
-        addMsg('msg user', text);
+        addMsg('user', text);
         document.getElementById('input').value = "";
-        
-        const key = document.getElementById('key').innerText;
-        if(key.length < 10 || key.includes("PASTE")) {
-            addMsg('msg ai', "⚠️ The Tome is locked. Open STATS to enter your Key.");
-            return;
-        }
+        const key = document.getElementById('key').innerText.trim();
 
         try {
-            // Build Context
-            const name = document.getElementById('name').innerText;
-            const cls = document.getElementById('class').innerText;
-            const lvl = document.getElementById('level').innerText;
-            const hp = document.getElementById('hp').innerText;
-            const context = `(System: D&D 5e. Player: ${name}, Level ${lvl} ${cls}, HP: ${hp}). `;
-
+            const stats = `[Character: ${document.getElementById('name').innerText}, ${document.getElementById('class').innerText} Lvl ${document.getElementById('level').innerText}]. `;
             const genAI = new GoogleGenerativeAI(key);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const chat = model.startChat({ history: [] });
-            
-            const result = await chat.sendMessage(context + text);
-            addMsg('msg ai', result.response.text());
-        } catch(e) {
-            addMsg('msg ai', "❌ The spirits are silent (API Error). Check your Key.");
-        }
+            const model = genAI.getGenerativeModel({ 
+                model: "gemini-1.5-flash",
+                systemInstruction: "You are a professional DM. Use the player's provided history for continuity. Keep responses immersive."
+            });
+
+            const chat = model.startChat({ history: history.slice(-12) });
+            const result = await chat.sendMessage(stats + text);
+            const resp = result.response.text();
+            addMsg('ai', resp);
+
+            history.push({ role: "user", parts: [{ text: text }] });
+            history.push({ role: "model", parts: [{ text: resp }] });
+            localStorage.setItem('campaign_log', JSON.stringify(history.slice(-50)));
+        } catch(e) { addMsg('ai', "❌ Spirit Error: Check your API Key."); }
     };
 </script>
 
